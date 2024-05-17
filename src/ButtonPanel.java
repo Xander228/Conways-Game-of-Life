@@ -26,38 +26,64 @@ public class ButtonPanel extends JPanel {
         }
 
         JButton start = new GameButton("Start");
-
         start.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
-                ArrayPanel.panelState = Constants.PanelStates.SORT_PHASE;
-                if(sortThread != null) sortThread.interrupt();
-                sortThread = new Thread(QuickSort::sort);
-                sortThread.start();
+
+            }
+        });
+
+        JButton step = new GameButton("Step");
+        step.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                GamePanel.nextGeneration();
             }
         });
 
         JButton stop = new GameButton("Stop");
         stop.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
-                ArrayPanel.panelState = Constants.PanelStates.IDLE_PHASE;
-                if(sortThread != null) sortThread.interrupt();
-
             }
         });
 
-        JButton shuffle = new GameButton("Shuffle");
-        shuffle.addActionListener(new ActionListener(){
+        JButton reset = new GameButton("Reset");
+        reset.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
-                ArrayPanel.resetArray();
-                ArrayPanel.panelState = Constants.PanelStates.SHUFFLE_PHASE;
-                if(sortThread != null) sortThread.interrupt();
-                sortThread = new Thread(Shuffle::run);
-                sortThread.start();
+                GamePanel.resetBoard();
             }
         });
 
-        add(start, BorderLayout.WEST);
-        add(stop);
-        add(shuffle, BorderLayout.EAST);
+        JButton random = new GameButton("Random");
+        random.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                GamePanel.randomizeBoard();
+            }
+        });
+
+        JTextField speed = new JTextField("1",6);
+        speed.setPreferredSize(new Dimension(100, 30));
+        speed.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Constants.ACCENT_COLOR));
+        speed.setFont(new Font("Arial", Font.BOLD, 16));
+        speed.setForeground(Constants.BACKGROUND_COLOR);
+        speed.setHorizontalAlignment(SwingConstants.CENTER);
+
+
+        JPanel leftSubPanel = new JPanel();
+        leftSubPanel.setLayout(new BorderLayout(20, 0));
+        leftSubPanel.setBackground(Constants.BACKGROUND_COLOR);
+
+        JPanel rightSubPanel = new JPanel();
+        rightSubPanel.setLayout(new BorderLayout(20, 0));
+        rightSubPanel.setBackground(Constants.BACKGROUND_COLOR);
+
+        leftSubPanel.add(start, BorderLayout.WEST);
+        leftSubPanel.add(step);
+        leftSubPanel.add(stop, BorderLayout.EAST);
+
+        rightSubPanel.add(reset, BorderLayout.WEST);
+        rightSubPanel.add(random);
+        rightSubPanel.add(speed, BorderLayout.EAST);
+
+        add(leftSubPanel,BorderLayout.WEST);
+        add(rightSubPanel,BorderLayout.EAST);
     }
 }

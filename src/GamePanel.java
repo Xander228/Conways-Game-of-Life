@@ -1,4 +1,3 @@
-import javax.sound.midi.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -7,86 +6,136 @@ import java.awt.geom.Rectangle2D;
 
 public class GamePanel extends JPanel {
 
-    private Timer timer;
-    public static volatile int[][] currentBoard;
-    private int[] writtenIndexes;
-    private int[] readIndexes;
-    public static volatile Constants.PanelStates panelState;
+    private static Timer gameTimer;
+    public static volatile boolean[][] currentBoard;
 
-    Synthesizer syn;
-    MidiChannel[] midChannel;
-    Instrument[] instrument;
+    public static volatile Constants.PanelStates panelState;
 
 
 
     GamePanel() {
         setPreferredSize(new Dimension(Constants.BOARD_PIXEL_WIDTH, Constants.BOARD_PIXEL_HEIGHT));
-        setBackground(Constants.BACKGROUND_COLOR);
+        setBackground(Constants.ACCENT_COLOR);
 
         panelState = Constants.PanelStates.IDLE_PHASE;
-        currentBoard = new int[Constants.BOARD_HEIGHT][Constants.BOARD_WIDTH];
+        currentBoard = new boolean[Constants.BOARD_HEIGHT][Constants.BOARD_WIDTH];
 
         this.addMouseListener(new MouseListener() {
             @Override
-            public void mouseClicked(MouseEvent e) {
-                int x=e.getX();
-                int y=e.getY();
-                System.out.println(x+","+y);//these co-ords are relative to the component
+            public void mouseClicked(MouseEvent e) {}
+            @Override
+            public void mousePressed(MouseEvent e) {
+                invertCell(
+                        (int)(e.getX() / Constants.CELL_WIDTH),
+                        (int)(e.getY() / Constants.CELL_WIDTH));
             }
+            @Override
+            public void mouseReleased(MouseEvent e) {}
+            @Override
+            public void mouseEntered(MouseEvent e) {}
+            @Override
+            public void mouseExited(MouseEvent e) {}
         });
 
-        timer = new Timer(Constants.DISPLAY_LOOP_TIME, new ActionListener() {
+        Timer displayTimer = new Timer(Constants.DISPLAY_LOOP_TIME, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 repaint();
             }
         });
 
-        timer.start();
+        displayTimer.start();
+
+        gameTimer = new Timer(100, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                nextGeneration();
+            }
+        });
+
+        displayTimer.start();
+    }
+
+    public void invertCell(int x, int y){
+        currentBoard[y][x] = !currentBoard[y][x];
     }
 
     public void drawArray(Graphics g){
-        boolean hasChanged = false;
-        boolean[] wasWritten = array.getWasWritten();
-        boolean[] wasRead = array.getWasRead();
-
-        for(int x = 0; x < Constants.BOARD_WIDTH; x++) if(wasWritten[x]) {
-            writtenIndexes[x] = Constants.HIGHLIGHT_LOOP_TIME;
-            hasChanged = true;
-        }
-        for(int x = 0; x < Constants.BOARD_WIDTH; x++) if(wasRead[x]) {
-            readIndexes[x] = Constants.HIGHLIGHT_LOOP_TIME;
-            hasChanged = true;
-        }
 
         Graphics2D g2 = (Graphics2D) g;
         g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        int maxValue = 0;
-        for(int x = 0; x < array.length; x++) maxValue = Math.max(maxValue, array.getSilently(x));
-
-        double spaceWidth = (Constants.BOARD_PIXEL_WIDTH - (2.0 * Constants.BOARD_BORDER_WIDTH)) / (Constants.BAR_SPACE_RATIO * array.length + array.length - 1);
-        double heightRatio = (Constants.BOARD_PIXEL_HEIGHT - (2.0 * Constants.BOARD_BORDER_WIDTH)) / maxValue;
-        g.setColor(Constants.PRIMARY_COLOR);
-        for(int x = 0; x < array.length; x++) {
-            g.setColor(wasWritten[x] ? Constants.WRITTEN_COLOR : (wasRead[x] ? Constants.READ_COLOR : Constants.PRIMARY_COLOR));
-            if(writtenIndexes[x] >= 0 && hasChanged) writtenIndexes[x]--;
-            double barHeight = array.getSilently(x) * heightRatio;
-            Rectangle2D rect = new Rectangle2D.Double(
-                    (Constants.BOARD_BORDER_WIDTH + (x * spaceWidth * (1 + Constants.BAR_SPACE_RATIO))),
-                    Constants.BOARD_PIXEL_HEIGHT - barHeight - Constants.BOARD_BORDER_WIDTH,
-                    (spaceWidth * Constants.BAR_SPACE_RATIO),
-                    barHeight);
-            g2.fill(rect);
-
+        for(int y = 0; y < currentBoard.length; y++) {
+            for(int x = 0; x < currentBoard[0].length; x++) {
+                g.setColor(currentBoard[y][x] ? Constants.LIVE_COLOR : Constants.BACKGROUND_COLOR);
+                Rectangle2D rect = new Rectangle2D.Double(
+                        (int)(Constants.CELL_BORDER_WIDTH / 2) + (x * Constants.CELL_WIDTH),
+                        (int)(Constants.CELL_BORDER_WIDTH / 2) + (y * Constants.CELL_WIDTH),
+                        Constants.CELL_WIDTH - Constants.CELL_BORDER_WIDTH,
+                        Constants.CELL_WIDTH - Constants.CELL_BORDER_WIDTH);
+                g2.fill(rect);
+            }
         }
     }
 
-    public static void resetArray(){
-        array = new MonitoredArray(Constants.BOARD_WIDTH);
-        for (int x = 0; x < Constants.BOARD_WIDTH; x++) array.set(x, Constants.BOARD_WIDTH - x);
+    public static void resetBoard(){
+            currentBoard = new boolean[Constants.BOARD_HEIGHT][Constants.BOARD_WIDTH];
     }
+
+    public static void randomizeBoard(){
+        currentBoard = new boolean[Constants.BOARD_HEIGHT][Constants.BOARD_WIDTH];
+        for(int y = 0; y < currentBoard.length; y++) {
+            for (int x = 0; x < currentBoard[0].length; x++) {
+                currentBoard[y][x] = (int)(2 * Math.random()) == 0;
+            }
+        }
+    }
+
+    public static void nextGeneration() {
+        boolean[][] nextBoard = new boolean[Constants.BOARD_HEIGHT][Constants.BOARD_WIDTH];
+        for(int y = 0; y < currentBoard.length; y++) {
+            for (int x = 0; x < currentBoard[0].length; x++) {
+                boolean newCell = false;
+                try {newCell = checkNeighbors(x,y);}
+                catch (Exception e) {}
+                nextBoard[y][x] = newCell;
+            }
+        }
+        currentBoard = nextBoard;
+    }
+    public static boolean checkNeighbors(int x, int y){
+        int neighborSum = 0;
+        for (int i = -1; i < 2; i++) if (currentBoard[y + 1][x + i]) neighborSum++;
+        for (int i = -1; i < 2; i++) if (currentBoard[y - 1][x + i]) neighborSum++;
+        if (currentBoard[y][x + 1]) neighborSum++;
+        if (currentBoard[y][x - 1]) neighborSum++;
+
+        if(currentBoard[y][x] && neighborSum < 2) return false;
+        if(currentBoard[y][x] && neighborSum > 3) return false;
+        if(neighborSum == 3) return true;
+        return currentBoard[y][x];
+    }
+
+    public static boolean readCell(int x, int y){
+        boolean thisCell = false;
+        try {thisCell = checkNeighbors(x,y);}
+        finally {currentBoard[y][x] = thisCell;}
+        return currentBoard[y][x];
+    }
+
+    public static void startTimer(){
+        gameTimer.start();
+    }
+
+    public static void stopTimer(){
+        gameTimer.stop();
+    }
+
+    public static void updateTimerSpeed(int freq){
+
+    }
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);

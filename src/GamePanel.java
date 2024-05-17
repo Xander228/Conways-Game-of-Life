@@ -46,7 +46,7 @@ public class GamePanel extends JPanel {
 
         displayTimer.start();
 
-        gameTimer = new Timer(100, new ActionListener() {
+        gameTimer = new Timer(Constants.DEFAULT_GAME_DELAY, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 nextGeneration();
@@ -117,13 +117,6 @@ public class GamePanel extends JPanel {
         return currentBoard[y][x];
     }
 
-    public static boolean readCell(int x, int y){
-        boolean thisCell = false;
-        try {thisCell = checkNeighbors(x,y);}
-        finally {currentBoard[y][x] = thisCell;}
-        return currentBoard[y][x];
-    }
-
     public static void startTimer(){
         gameTimer.start();
     }
@@ -132,8 +125,12 @@ public class GamePanel extends JPanel {
         gameTimer.stop();
     }
 
-    public static void updateTimerSpeed(int freq){
-
+    public static void updateTimerSpeed(String freq){
+        boolean inputNotOk;
+        try{inputNotOk = Integer.parseInt(freq) <= 0;}
+        catch (Exception e) {inputNotOk = true;}
+        if (inputNotOk) gameTimer.setDelay(Constants.DEFAULT_GAME_DELAY);
+        else gameTimer.setDelay(1000 / Integer.parseInt(freq));
     }
 
     @Override

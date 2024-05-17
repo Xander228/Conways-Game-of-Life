@@ -1,7 +1,7 @@
 import javax.swing.*;
+import javax.swing.event.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 
 public class ButtonPanel extends JPanel {
     private Thread sortThread;
@@ -28,7 +28,7 @@ public class ButtonPanel extends JPanel {
         JButton start = new GameButton("Start");
         start.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
-
+                GamePanel.startTimer();
             }
         });
 
@@ -42,12 +42,14 @@ public class ButtonPanel extends JPanel {
         JButton stop = new GameButton("Stop");
         stop.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
+                GamePanel.stopTimer();
             }
         });
 
         JButton reset = new GameButton("Reset");
         reset.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
+                GamePanel.stopTimer();
                 GamePanel.resetBoard();
             }
         });
@@ -55,16 +57,28 @@ public class ButtonPanel extends JPanel {
         JButton random = new GameButton("Random");
         random.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
+                GamePanel.stopTimer();
                 GamePanel.randomizeBoard();
             }
         });
 
-        JTextField speed = new JTextField("1",6);
+        JTextField speed = new JTextField("" + 1000 / Constants.DEFAULT_GAME_DELAY,6);
         speed.setPreferredSize(new Dimension(100, 30));
         speed.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Constants.ACCENT_COLOR));
         speed.setFont(new Font("Arial", Font.BOLD, 16));
         speed.setForeground(Constants.BACKGROUND_COLOR);
         speed.setHorizontalAlignment(SwingConstants.CENTER);
+        speed.getDocument().addDocumentListener(new DocumentListener() {
+            public void changedUpdate(DocumentEvent e) {
+                GamePanel.updateTimerSpeed(speed.getText());
+            }
+            public void removeUpdate(DocumentEvent e) {
+                GamePanel.updateTimerSpeed(speed.getText());
+            }
+            public void insertUpdate(DocumentEvent e) {
+                GamePanel.updateTimerSpeed(speed.getText());
+            }
+        });
 
 
         JPanel leftSubPanel = new JPanel();

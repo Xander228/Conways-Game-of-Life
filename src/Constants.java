@@ -11,8 +11,8 @@ public class Constants {
 
 
 
-    public static final int BOARD_WIDTH = 400;
-    public static final int BOARD_HEIGHT = 200;
+    public static final int BOARD_WIDTH = 200;
+    public static final int BOARD_HEIGHT = 100;
 
     public static final int DESIRED_PIXEL_WIDTH = 1600;
     public static final int DESIRED_PIXEL_HEIGHT = 800;
@@ -23,6 +23,9 @@ public class Constants {
     public static final double CELL_BORDER_WIDTH = 1;
     public static final int BUTTON_HEIGHT = 100; //The visible width of the board, in pixels
 
+
+    public static final int IMPORT_WIDTH = 600;
+    public static final int IMPORT_HEIGHT = 300;
 
     
 

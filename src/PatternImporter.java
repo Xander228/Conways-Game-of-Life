@@ -83,19 +83,20 @@ public class PatternImporter extends JDialog {
             }
         }
 
-        JFileChooser directoryChooser = new JFileChooser();
-        directoryChooser.setDialogTitle("Choose a pattern file");
-        directoryChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        directoryChooser.addChoosableFileFilter(new FileNameExtensionFilter("Pattern Files", "rle", "txt"));
+        String userhome = System.getProperty("user.home");
+        JFileChooser fileChooser = new JFileChooser(userhome +"\\Downloads");
+        fileChooser.setDialogTitle("Choose a pattern file");
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Pattern Files", "rle", "txt"));
 
         JButton importFile = new GameButton("Select File"); //Creates a new button to reset the game
         //Add an actionListener object that runs actionPerformed when it senses the button press and restarts the game
         importFile.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                directoryChooser.updateUI();
-                directoryChooser.showOpenDialog(null);
+                fileChooser.updateUI();
+                fileChooser.showOpenDialog(null);
                 try {
-                    textArea.setText(Files.readString(Paths.get(directoryChooser.getSelectedFile().toURI())));
+                    textArea.setText(Files.readString(Paths.get(fileChooser.getSelectedFile().toURI())));
                 } catch (Exception ae){
 
                 }
@@ -107,7 +108,7 @@ public class PatternImporter extends JDialog {
         importString.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 try {
-                    convertToArray(textArea.getText());
+                    GamePanel.patternPlacer = new PatternPlacer(convertToArray(textArea.getText()));
                 } catch (FileNotFoundException ex) {
                     throw new RuntimeException(ex);
                 }

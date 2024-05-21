@@ -9,9 +9,10 @@ public class GamePanel extends JPanel {
     private static Timer gameTimer;
     public static volatile boolean[][] currentBoard;
 
+    public static PatternPlacer patternPlacer;
     public static volatile Constants.PanelStates panelState;
 
-
+    GamePanel thisPanel = this;
 
     GamePanel() {
         setPreferredSize(new Dimension(Constants.BOARD_PIXEL_WIDTH, Constants.BOARD_PIXEL_HEIGHT));
@@ -40,6 +41,9 @@ public class GamePanel extends JPanel {
         Timer displayTimer = new Timer(Constants.DISPLAY_LOOP_TIME, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                Point p = MouseInfo.getPointerInfo().getLocation();
+                SwingUtilities.convertPointFromScreen(p, thisPanel);
+                if (patternPlacer != null) patternPlacer.updateCoords(p);
                 repaint();
             }
         });
@@ -137,5 +141,7 @@ public class GamePanel extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         drawArray(g);
+        if (patternPlacer != null) patternPlacer.drawPattern(g);
+
     }
 }

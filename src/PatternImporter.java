@@ -1,18 +1,20 @@
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class PatternImporter extends JDialog {
+
     PatternImporter() {
         super((Frame) null, "Import String"); //Call the parent class's constructor
         this.setSize(Constants.IMPORT_WIDTH, Constants.IMPORT_HEIGHT); //Sets the size of the dialog
         this.setLocationRelativeTo(MainFrame.frame);
-
         JPanel dialogPanel = new JPanel(); //Declare and initialize the dialogPanel that stores the message, buttons, and scores
         dialogPanel.setBorder(BorderFactory.createMatteBorder(10, 10, 10, 10, Constants.BACKGROUND_COLOR)); //Add a border around the frame
         dialogPanel.setLayout(new BorderLayout(0, 0)); //Sets the edge offset of member panels to properly space them
@@ -81,11 +83,22 @@ public class PatternImporter extends JDialog {
             }
         }
 
+        JFileChooser directoryChooser = new JFileChooser();
+        directoryChooser.setDialogTitle("Choose a pattern file");
+        directoryChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        directoryChooser.addChoosableFileFilter(new FileNameExtensionFilter("Pattern Files", "rle", "txt"));
+
         JButton importFile = new GameButton("Select File"); //Creates a new button to reset the game
         //Add an actionListener object that runs actionPerformed when it senses the button press and restarts the game
         importFile.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                directoryChooser.updateUI();
+                directoryChooser.showOpenDialog(null);
+                try {
+                    textArea.setText(Files.readString(Paths.get(directoryChooser.getSelectedFile().toURI())));
+                } catch (Exception ae){
 
+                }
             }
         });
 
@@ -93,7 +106,11 @@ public class PatternImporter extends JDialog {
         //Add an actionListener object that runs actionPerformed when it senses the button press and exits the game
         importString.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-
+                try {
+                    convertToArray();
+                } catch (FileNotFoundException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         });
 
@@ -108,30 +125,64 @@ public class PatternImporter extends JDialog {
         this.setVisible(true); //Sets the dialog to visible
     }
 
-    public boolean[][] convertToArray(String s) throws FileNotFoundException {
-        ArrayList<Boolean> pattern = new ArrayList<Boolean>();
-        
-        File dataFile = new File("glider.rle");
+    public boolean[][] convertToArray() throws FileNotFoundException {
+        String patternCode = "";
+
+        File dataFile = new File("C:\\Users\\patri\\IdeaProjects\\Conways Game of Life\\src\\glider.rle");
 
         Scanner scanner = new Scanner(dataFile);
-
         scanner.useDelimiter("\n");
 
         while (scanner.hasNext()) {
             String line = scanner.nextLine();
             if (line.charAt(0) == '#') continue;
             if (line.charAt(0) == 'x') continue;
-            Scanner lineScanner = new Scanner(line);
-            lineScanner.useDelimiter("$");
-            int total = 0;
-            int nScores = 0;
-            System.out.print(lineScanner.next() + ": ");
-            while (lineScanner.hasNext()) {
-                total += lineScanner.nextInt();
-                nScores++;
-            }
-            System.out.println(total /= nScores);
+            patternCode += line;
         }
+
+        Scanner patternScanner = new Scanner(patternCode);
+        patternScanner.useDelimiter("[\\$!]");
+        int xSize = 0;
+        int ySize = 0;
+        ArrayList<ArrayList<Boolean>> pattern = new ArrayList<ArrayList<Boolean>>();
+
+        while (patternScanner.hasNext()) {
+            ArrayList<Boolean> patternLine = new ArrayList<Boolean>();
+            String line = patternScanner.next();
+            int lastCellIndex = -1;
+            for (int i = 0; i < line.length();i++){
+                int repeat;
+                if(!(line.charAt(i) == 'b' || line.charAt(i) == 'o')) continue;
+                try {
+                    repeat = Integer.parseInt(line.substring(lastCellIndex + 1, i));
+                }
+                catch (Exception e) {
+                    repeat = 1;
+                }
+                lastCellIndex = i;
+                boolean alive = line.charAt(i) == 'o';
+                for(int j = 0; j < repeat; j++) patternLine.add(alive);
+            }
+            xSize = Math.max(xSize, patternLine.size());
+            pattern.add(patternLine);
+            ySize++;
+        }
+
+        System.out.println(xSize + ", " + ySize);
+
+        boolean[][] output = new boolean[xSize][ySize];
+        for (int y = 0; y < ySize; y++){
+            ArrayList<Boolean> patternLine = pattern.get(y);
+            for (int x = 0; x < xSize; x++){
+                try {
+                    output[x][y] = patternLine.get(x);
+                }
+                catch(IndexOutOfBoundsException e) {
+                    continue;
+                }
+            }
+        }
+        return output;
     }
 
 }

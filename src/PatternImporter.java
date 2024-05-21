@@ -107,7 +107,7 @@ public class PatternImporter extends JDialog {
         importString.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 try {
-                    convertToArray();
+                    convertToArray(textArea.getText());
                 } catch (FileNotFoundException ex) {
                     throw new RuntimeException(ex);
                 }
@@ -125,12 +125,10 @@ public class PatternImporter extends JDialog {
         this.setVisible(true); //Sets the dialog to visible
     }
 
-    public boolean[][] convertToArray() throws FileNotFoundException {
+    public boolean[][] convertToArray(String string) throws FileNotFoundException {
         String patternCode = "";
 
-        File dataFile = new File("C:\\Users\\patri\\IdeaProjects\\Conways Game of Life\\src\\glider.rle");
-
-        Scanner scanner = new Scanner(dataFile);
+        Scanner scanner = new Scanner(string);
         scanner.useDelimiter("\n");
 
         while (scanner.hasNext()) {

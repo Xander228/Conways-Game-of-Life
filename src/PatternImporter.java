@@ -166,8 +166,6 @@ public class PatternImporter extends JDialog {
             ySize++;
         }
 
-        System.out.println(xSize + ", " + ySize);
-
         boolean[][] output = new boolean[xSize][ySize];
         for (int y = 0; y < ySize; y++){
             ArrayList<Boolean> patternLine = pattern.get(y);

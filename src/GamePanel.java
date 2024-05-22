@@ -26,6 +26,11 @@ public class GamePanel extends JPanel {
             public void mouseClicked(MouseEvent e) {}
             @Override
             public void mousePressed(MouseEvent e) {
+                if (patternPlacer != null){
+                    patternPlacer.writeToBoard();
+                    patternPlacer = null;
+                    return;
+                }
                 invertCell(
                         (int)(e.getX() / Constants.CELL_WIDTH),
                         (int)(e.getY() / Constants.CELL_WIDTH));

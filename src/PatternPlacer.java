@@ -11,6 +11,17 @@ public class PatternPlacer {
         y = 0;
     }
 
+    public void writeToBoard(){
+        //Index through the y-axis of the tetromino
+        for (int indexY = 0; indexY < pattern.length; indexY++) {
+            //Index through the x-axis of the tetromino
+            for (int indexX = 0; indexX < pattern[0].length; indexX++) {
+                if (!pattern[indexX][indexY]) continue; //Skips the cell if it's empty
+                GamePanel.currentBoard[x + indexX][y + indexY] = true; //Write the cell to the board
+            }
+        }
+    }
+
     public void updateCoords(Point p){
         x = (int)(p.getX() / Constants.CELL_WIDTH);
         y = (int)(p.getY() / Constants.CELL_WIDTH);

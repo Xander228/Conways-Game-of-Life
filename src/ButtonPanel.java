@@ -7,7 +7,7 @@ public class ButtonPanel extends JPanel {
     private Thread sortThread;
 
     ButtonPanel(MainFrame frame){
-        setPreferredSize(new Dimension(Constants.BOARD_PIXEL_WIDTH, Constants.BUTTON_HEIGHT));
+        setPreferredSize(new Dimension(0, Constants.BUTTON_HEIGHT));
         setBorder(BorderFactory.createMatteBorder(25, 50, 25, 50, Constants.BACKGROUND_COLOR));
         setLayout(new BorderLayout(200, 0));
         setBackground(Constants.BACKGROUND_COLOR);
@@ -31,8 +31,17 @@ public class ButtonPanel extends JPanel {
             }
         });
 
-        JButton step = new GameButton("Step");
-        step.addActionListener(new ActionListener(){
+        JButton stepFwd = new GameButton("Step Forward");
+        stepFwd.setPreferredSize(new Dimension(130, 30));
+        stepFwd.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                GamePanel.nextGeneration();
+            }
+        });
+
+        JButton stepRev = new GameButton("Step Reverse");
+        stepRev.setPreferredSize(new Dimension(130, 30));
+        stepRev.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
                 GamePanel.nextGeneration();
             }
@@ -88,24 +97,20 @@ public class ButtonPanel extends JPanel {
         });
 
 
-        JPanel leftSubPanel = new JPanel();
-        leftSubPanel.setLayout(new BorderLayout(20, 0));
-        leftSubPanel.setBackground(Constants.BACKGROUND_COLOR);
+        JPanel buttonSubPanel = new JPanel(new GridLayout(1,8,20,0));
+        buttonSubPanel.setBackground(Constants.BACKGROUND_COLOR);
 
-        JPanel rightSubPanel = new JPanel();
-        rightSubPanel.setLayout(new BorderLayout(20, 0));
-        rightSubPanel.setBackground(Constants.BACKGROUND_COLOR);
+        buttonSubPanel.add(stop);
+        buttonSubPanel.add(stepRev);
+        buttonSubPanel.add(stepFwd);
+        buttonSubPanel.add(start);
+        buttonSubPanel.add(importString);
+        buttonSubPanel.add(reset);
+        buttonSubPanel.add(random);
+        buttonSubPanel.add(speed);
 
-        leftSubPanel.add(start, BorderLayout.WEST);
-        leftSubPanel.add(step);
-        leftSubPanel.add(stop, BorderLayout.EAST);
+        add(buttonSubPanel);
 
-        rightSubPanel.add(reset, BorderLayout.WEST);
-        rightSubPanel.add(random);
-        rightSubPanel.add(speed, BorderLayout.EAST);
 
-        add(leftSubPanel,BorderLayout.WEST);
-        add(rightSubPanel,BorderLayout.EAST);
-        add(importString,BorderLayout.CENTER);
     }
 }

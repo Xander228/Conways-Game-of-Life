@@ -23,12 +23,10 @@ public class PatternPlacer {
     }
 
     public void writeToBoard(){
-        //Index through the y-axis of the tetromino
         for (int indexY = 0; indexY < pattern[0].length; indexY++) {
-            //Index through the x-axis of the tetromino
             for (int indexX = 0; indexX < pattern.length; indexX++) {
-                if (!pattern[indexX][indexY]) continue; //Skips the cell if it's empty
-                GamePanel.currentBoard[y + indexY][x + indexX] = true; //Write the cell to the board
+                if (!pattern[indexX][indexY]) continue;
+                GamePanel.currentBoard[y + indexY][x + indexX] = true;
             }
         }
     }

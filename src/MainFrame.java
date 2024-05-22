@@ -10,8 +10,7 @@ public class MainFrame extends JFrame {
     public MainFrame() {
         //Set up the frame properties
         setTitle("Conway's Game of Life"); //Title of the frame
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //Behavior on close, exits the program when the frame is closed
-        setResizable(false); //sets the frame to a fixed size, not resizeable by a user
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         JPanel mainPanel = new JPanel();
         mainPanel.setBorder(BorderFactory.createMatteBorder(10,10,10,10,Constants.ACCENT_COLOR)); //Add a border around the frame
         mainPanel.setBackground(Constants.ACCENT_COLOR); //Set the background color of the panel

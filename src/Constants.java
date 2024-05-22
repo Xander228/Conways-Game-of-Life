@@ -11,15 +11,14 @@ public class Constants {
 
 
 
-    public static final int BOARD_WIDTH = 50;
-    public static final int BOARD_HEIGHT = 25;
+    public static final int BOARD_WIDTH = 100;
+    public static final int BOARD_HEIGHT = 50;
+    
+    public static final int DESIRED_VIEWPORT_WIDTH = 1000;
+    public static final int DESIRED_VIEWPORT_HEIGHT = 500;
+    public static final double CELL_WIDTH = 8;
 
-    public static final int DESIRED_PIXEL_WIDTH = 1600;
-    public static final int DESIRED_PIXEL_HEIGHT = 800;
-    public static final double CELL_WIDTH = Math.min(((double)DESIRED_PIXEL_WIDTH) / BOARD_WIDTH, ((double)DESIRED_PIXEL_HEIGHT) / BOARD_HEIGHT);
 
-    public static final int BOARD_PIXEL_WIDTH = (int)(BOARD_WIDTH * CELL_WIDTH); //The visible width of the board, in pixels
-    public static final int BOARD_PIXEL_HEIGHT = (int)(BOARD_HEIGHT * CELL_WIDTH); //The visible width of the board, in pixels
     public static final double CELL_BORDER_WIDTH = 2;
     public static final int BUTTON_HEIGHT = 100; //The visible width of the board, in pixels
 

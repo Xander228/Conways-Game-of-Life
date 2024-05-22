@@ -11,11 +11,15 @@ public class GamePanel extends JPanel {
 
     public static PatternPlacer patternPlacer;
     public static JDialog patternImporter;
+    int dragStartX, dragStartY;
+    private boolean isDragging;
+    public int viewPortOffsetX, viewPortOffsetY;
+    public int liveViewPortOffsetX, liveViewPortOffsetY;
 
     GamePanel thisPanel = this;
 
     GamePanel() {
-        setPreferredSize(new Dimension(Constants.BOARD_PIXEL_WIDTH, Constants.BOARD_PIXEL_HEIGHT));
+        setPreferredSize(new Dimension(Constants.DESIRED_VIEWPORT_WIDTH, Constants.DESIRED_VIEWPORT_HEIGHT));
         setBackground(Constants.ACCENT_COLOR);
         currentBoard = new boolean[Constants.BOARD_HEIGHT][Constants.BOARD_WIDTH];
 
@@ -24,17 +28,32 @@ public class GamePanel extends JPanel {
             public void mouseClicked(MouseEvent e) {}
             @Override
             public void mousePressed(MouseEvent e) {
-                if (patternPlacer != null){
-                    patternPlacer.writeToBoard();
-                    patternPlacer = null;
-                    return;
+                if(e.getButton() == MouseEvent.BUTTON1) {
+                    if (patternPlacer != null) {
+                        patternPlacer.writeToBoard();
+                        patternPlacer = null;
+                        return;
+                    }
+                    invertCell(
+                            (int) ((e.getX() - viewPortOffsetX) / Constants.CELL_WIDTH) ,
+                            (int) ((e.getY() - viewPortOffsetY) / Constants.CELL_WIDTH));
                 }
-                invertCell(
-                        (int)(e.getX() / Constants.CELL_WIDTH),
-                        (int)(e.getY() / Constants.CELL_WIDTH));
+                if(e.getButton() == MouseEvent.BUTTON2 || e.getButton() == MouseEvent.BUTTON3) {
+                    isDragging = true;
+                    dragStartX = (int) e.getX();
+                    dragStartY = (int) e.getY();
+                }
             }
             @Override
-            public void mouseReleased(MouseEvent e) {}
+            public void mouseReleased(MouseEvent e) {
+                if(e.getButton() == MouseEvent.BUTTON2 || e.getButton() == MouseEvent.BUTTON3) {
+                    isDragging = false;
+                    viewPortOffsetX += liveViewPortOffsetX;
+                    viewPortOffsetY += liveViewPortOffsetY;
+                    liveViewPortOffsetX = 0;
+                    liveViewPortOffsetY = 0;
+                }
+            }
             @Override
             public void mouseEntered(MouseEvent e) {}
             @Override
@@ -46,6 +65,10 @@ public class GamePanel extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 Point p = MouseInfo.getPointerInfo().getLocation();
                 SwingUtilities.convertPointFromScreen(p, thisPanel);
+                if(isDragging){
+                    liveViewPortOffsetX = (int)p.getX() - dragStartX;
+                    liveViewPortOffsetY = (int)p.getY() - dragStartY;
+                }
                 if (patternPlacer != null) patternPlacer.updateCoords(p);
                 repaint();
             }
@@ -77,8 +100,8 @@ public class GamePanel extends JPanel {
             for(int x = 0; x < currentBoard[0].length; x++) {
                 g.setColor(currentBoard[y][x] ? Constants.LIVE_COLOR : Constants.BACKGROUND_COLOR);
                 Rectangle2D rect = new Rectangle2D.Double(
-                        (int)(Constants.CELL_BORDER_WIDTH / 2) + (x * Constants.CELL_WIDTH),
-                        (int)(Constants.CELL_BORDER_WIDTH / 2) + (y * Constants.CELL_WIDTH),
+                        (int)(Constants.CELL_BORDER_WIDTH / 2) + (x * Constants.CELL_WIDTH) + viewPortOffsetX + liveViewPortOffsetX ,
+                        (int)(Constants.CELL_BORDER_WIDTH / 2) + (y * Constants.CELL_WIDTH) + viewPortOffsetY + liveViewPortOffsetY,
                         Constants.CELL_WIDTH - Constants.CELL_BORDER_WIDTH,
                         Constants.CELL_WIDTH - Constants.CELL_BORDER_WIDTH);
                 g2.fill(rect);

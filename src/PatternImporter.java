@@ -112,6 +112,7 @@ public class PatternImporter extends JDialog {
                 } catch (FileNotFoundException ex) {
                     throw new RuntimeException(ex);
                 }
+                PatternImporter.super.dispose();
             }
         });
 
@@ -139,32 +140,46 @@ public class PatternImporter extends JDialog {
             patternCode += line;
         }
 
-        Scanner patternScanner = new Scanner(patternCode);
-        patternScanner.useDelimiter("[\\$!]");
         int xSize = 0;
         int ySize = 0;
         ArrayList<ArrayList<Boolean>> pattern = new ArrayList<ArrayList<Boolean>>();
 
-        while (patternScanner.hasNext()) {
+        int lastNormIndex = -1;
+        int lastEOLIndex = -1;
+        for (int i = 0; i < patternCode.length();i++){
+            int repeatEOL;
+            if((patternCode.charAt(i) == 'b' || patternCode.charAt(i) == 'o')) lastNormIndex = i;
+            if(!(patternCode.charAt(i) == '$' || patternCode.charAt(i) == '!')) continue;
+            try {
+                repeatEOL = Integer.parseInt(patternCode.substring(lastNormIndex + 1, i)) - 1;
+            } catch (Exception e) {
+                repeatEOL = 0;
+            }
+            String line = patternCode.substring(lastEOLIndex + 1, lastNormIndex + 1);
+            lastEOLIndex = i;
+
             ArrayList<Boolean> patternLine = new ArrayList<Boolean>();
-            String line = patternScanner.next();
             int lastCellIndex = -1;
-            for (int i = 0; i < line.length();i++){
+            for (int j = 0; j < line.length();j++){
                 int repeat;
-                if(!(line.charAt(i) == 'b' || line.charAt(i) == 'o')) continue;
+                if(!(line.charAt(j) == 'b' || line.charAt(j) == 'o')) continue;
                 try {
-                    repeat = Integer.parseInt(line.substring(lastCellIndex + 1, i));
+                    repeat = Integer.parseInt(line.substring(lastCellIndex + 1, j));
                 }
                 catch (Exception e) {
                     repeat = 1;
                 }
-                lastCellIndex = i;
-                boolean alive = line.charAt(i) == 'o';
-                for(int j = 0; j < repeat; j++) patternLine.add(alive);
+                lastCellIndex = j;
+                boolean alive = line.charAt(j) == 'o';
+                for(int k = 0; k < repeat; k++) patternLine.add(alive);
             }
             xSize = Math.max(xSize, patternLine.size());
             pattern.add(patternLine);
             ySize++;
+            for (int n = 0; n < repeatEOL; n++){
+                pattern.add(new ArrayList<Boolean>());
+                ySize++;
+            }
         }
 
         boolean[][] output = new boolean[xSize][ySize];

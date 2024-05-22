@@ -10,15 +10,13 @@ public class GamePanel extends JPanel {
     public static volatile boolean[][] currentBoard;
 
     public static PatternPlacer patternPlacer;
-    public static volatile Constants.PanelStates panelState;
+    public static JDialog patternImporter;
 
     GamePanel thisPanel = this;
 
     GamePanel() {
         setPreferredSize(new Dimension(Constants.BOARD_PIXEL_WIDTH, Constants.BOARD_PIXEL_HEIGHT));
         setBackground(Constants.ACCENT_COLOR);
-
-        panelState = Constants.PanelStates.IDLE_PHASE;
         currentBoard = new boolean[Constants.BOARD_HEIGHT][Constants.BOARD_WIDTH];
 
         this.addMouseListener(new MouseListener() {

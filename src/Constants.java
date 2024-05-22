@@ -11,8 +11,8 @@ public class Constants {
 
 
 
-    public static final int BOARD_WIDTH = 200;
-    public static final int BOARD_HEIGHT = 100;
+    public static final int BOARD_WIDTH = 50;
+    public static final int BOARD_HEIGHT = 25;
 
     public static final int DESIRED_PIXEL_WIDTH = 1600;
     public static final int DESIRED_PIXEL_HEIGHT = 800;
@@ -20,7 +20,7 @@ public class Constants {
 
     public static final int BOARD_PIXEL_WIDTH = (int)(BOARD_WIDTH * CELL_WIDTH); //The visible width of the board, in pixels
     public static final int BOARD_PIXEL_HEIGHT = (int)(BOARD_HEIGHT * CELL_WIDTH); //The visible width of the board, in pixels
-    public static final double CELL_BORDER_WIDTH = 1;
+    public static final double CELL_BORDER_WIDTH = 2;
     public static final int BUTTON_HEIGHT = 100; //The visible width of the board, in pixels
 
 
@@ -41,6 +41,7 @@ public class Constants {
     public static final  Color PRIMARY_COLOR = new Color((int)0x555555); //The color used to for headers and text for most panels
     public static final  Color ACCENT_COLOR = new Color((int)0x373737); //The color used to accent the headers and text for some panels
     public static final  Color LIVE_COLOR = new Color((int)0xFFFFFF);
+    public static final  Color HIGHLIGHT_COLOR = new Color((int)0x3FFFFF);
 }
 
 

@@ -6,7 +6,6 @@ import java.awt.event.*;
 public class ButtonPanel extends JPanel {
     private Thread sortThread;
 
-
     ButtonPanel(MainFrame frame){
         setPreferredSize(new Dimension(Constants.BOARD_PIXEL_WIDTH, Constants.BUTTON_HEIGHT));
         setBorder(BorderFactory.createMatteBorder(25, 50, 25, 50, Constants.BACKGROUND_COLOR));
@@ -62,6 +61,14 @@ public class ButtonPanel extends JPanel {
             }
         });
 
+        JButton importString = new GameButton("Import");
+        importString.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                if(GamePanel.patternImporter != null) GamePanel.patternImporter.dispose();
+                GamePanel.patternImporter = new PatternImporter();
+            }
+        });
+
         JTextField speed = new JTextField("" + 1000 / Constants.DEFAULT_GAME_DELAY,6);
         speed.setPreferredSize(new Dimension(100, 30));
         speed.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Constants.ACCENT_COLOR));
@@ -99,5 +106,6 @@ public class ButtonPanel extends JPanel {
 
         add(leftSubPanel,BorderLayout.WEST);
         add(rightSubPanel,BorderLayout.EAST);
+        add(importString,BorderLayout.CENTER);
     }
 }

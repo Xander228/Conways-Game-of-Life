@@ -1,5 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
 public class MainFrame extends JFrame {
 
@@ -21,6 +23,32 @@ public class MainFrame extends JFrame {
         mainPanel.add(gamePanel);
         mainPanel.add(buttonPanel,BorderLayout.SOUTH);
 
+        addKeyListener(
+                //creates a new KeyListener object with the following methods overriden
+                new KeyListener() {
+                    //Must be overriden to create object due to KeyListener being an interface
+                    @Override
+                    public void keyTyped(KeyEvent e) {
+                    }
+
+                    //Overrides the keyPressed method to add the state of the current pressed key to the map
+                    @Override
+                    public void keyPressed(KeyEvent e) {
+                        if(e.getKeyCode() == KeyEvent.VK_R) PatternPlacer.rotatePattern();
+                        if(e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+                            if(GamePanel.patternImporter != null) GamePanel.patternImporter.dispose();
+                            GamePanel.patternPlacer = null;
+                        }
+                    }
+
+                    //Overrides the keyReleased method to add the state of the current released key to the map
+                    @Override
+                    public void keyReleased(KeyEvent e) {
+                    }
+                }
+        );
+
+
         add(mainPanel);
         pack();
         setFocusable(true);
@@ -33,7 +61,6 @@ public class MainFrame extends JFrame {
         EventQueue.invokeLater(new Runnable(){
             public void run(){
                 frame = new MainFrame();
-                new PatternImporter();
             }
         });
     }

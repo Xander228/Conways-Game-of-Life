@@ -11,10 +11,13 @@ public class GamePanel extends JPanel {
 
     public static PatternPlacer patternPlacer;
     public static JDialog patternImporter;
-    int dragStartX, dragStartY;
+
+    public static double cellWidth;
+    private static double dragStartX, dragStartY;
     private boolean isDragging;
-    public int viewPortOffsetX, viewPortOffsetY;
-    public int liveViewPortOffsetX, liveViewPortOffsetY;
+    public static double viewPortOffsetX;
+    public static double viewPortOffsetY;
+    public double liveViewPortOffsetX, liveViewPortOffsetY;
 
     GamePanel thisPanel = this;
 
@@ -22,6 +25,7 @@ public class GamePanel extends JPanel {
         setPreferredSize(new Dimension(Constants.DESIRED_VIEWPORT_WIDTH, Constants.DESIRED_VIEWPORT_HEIGHT));
         setBackground(Constants.ACCENT_COLOR);
         currentBoard = new boolean[Constants.BOARD_HEIGHT][Constants.BOARD_WIDTH];
+        cellWidth = Constants.DEFAULT_CELL_WIDTH;
 
         this.addMouseListener(new MouseListener() {
             @Override
@@ -35,13 +39,14 @@ public class GamePanel extends JPanel {
                         return;
                     }
                     invertCell(
-                            (int) ((e.getX() - viewPortOffsetX) / Constants.CELL_WIDTH) ,
-                            (int) ((e.getY() - viewPortOffsetY) / Constants.CELL_WIDTH));
+                            (int)(e.getX() / cellWidth - viewPortOffsetX) ,
+                            (int)(e.getY() / cellWidth - viewPortOffsetY)
+                    );
                 }
                 if(e.getButton() == MouseEvent.BUTTON2 || e.getButton() == MouseEvent.BUTTON3) {
                     isDragging = true;
-                    dragStartX = (int) e.getX();
-                    dragStartY = (int) e.getY();
+                    dragStartX = e.getX();
+                    dragStartY = e.getY();
                 }
             }
             @Override
@@ -60,14 +65,21 @@ public class GamePanel extends JPanel {
             public void mouseExited(MouseEvent e) {}
         });
 
+        this.addMouseWheelListener(new MouseWheelListener() {
+            @Override
+            public void mouseWheelMoved(MouseWheelEvent e) {
+                centeredZoom(e.getPreciseWheelRotation());
+            }
+        });
+
         Timer displayTimer = new Timer(Constants.DISPLAY_LOOP_TIME, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 Point p = MouseInfo.getPointerInfo().getLocation();
                 SwingUtilities.convertPointFromScreen(p, thisPanel);
                 if(isDragging){
-                    liveViewPortOffsetX = (int)p.getX() - dragStartX;
-                    liveViewPortOffsetY = (int)p.getY() - dragStartY;
+                    liveViewPortOffsetX = (p.getX() - dragStartX) / cellWidth;
+                    liveViewPortOffsetY = (p.getY() - dragStartY) / cellWidth;
                 }
                 if (patternPlacer != null) patternPlacer.updateCoords(p);
                 repaint();
@@ -90,8 +102,17 @@ public class GamePanel extends JPanel {
         currentBoard[y][x] = !currentBoard[y][x];
     }
 
+    public void centeredZoom(double zoomFactor){
+        Point p = MouseInfo.getPointerInfo().getLocation();
+        SwingUtilities.convertPointFromScreen(p, thisPanel);
+        double oldCellWidth = cellWidth;
+        cellWidth -= (Constants.ZOOM_SCALE_FACTOR * cellWidth * zoomFactor);
+        cellWidth = Math.clamp(cellWidth, Constants.MIN_CELL_WIDTH, Constants.MAX_CELL_WIDTH);
+        viewPortOffsetX -= (p.getX() * (cellWidth / oldCellWidth - 1)) / cellWidth;
+        viewPortOffsetY -= (p.getY() * (cellWidth / oldCellWidth - 1)) / cellWidth;
+    }
     public void drawArray(Graphics g){
-
+        double cellBoarderWidth = GamePanel.cellWidth * Constants.CELL_BORDER_RATIO;
         Graphics2D g2 = (Graphics2D) g;
         g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -100,10 +121,10 @@ public class GamePanel extends JPanel {
             for(int x = 0; x < currentBoard[0].length; x++) {
                 g.setColor(currentBoard[y][x] ? Constants.LIVE_COLOR : Constants.BACKGROUND_COLOR);
                 Rectangle2D rect = new Rectangle2D.Double(
-                        (int)(Constants.CELL_BORDER_WIDTH / 2) + (x * Constants.CELL_WIDTH) + viewPortOffsetX + liveViewPortOffsetX ,
-                        (int)(Constants.CELL_BORDER_WIDTH / 2) + (y * Constants.CELL_WIDTH) + viewPortOffsetY + liveViewPortOffsetY,
-                        Constants.CELL_WIDTH - Constants.CELL_BORDER_WIDTH,
-                        Constants.CELL_WIDTH - Constants.CELL_BORDER_WIDTH);
+                        (cellBoarderWidth / 2) + (x + viewPortOffsetX + liveViewPortOffsetX) * cellWidth,
+                        (cellBoarderWidth / 2) + (y + viewPortOffsetY + liveViewPortOffsetY) * cellWidth,
+                        cellWidth - cellBoarderWidth,
+                        cellWidth - cellBoarderWidth);
                 g2.fill(rect);
             }
         }

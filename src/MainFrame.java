@@ -5,6 +5,18 @@ import java.awt.event.KeyListener;
 
 public class MainFrame extends JFrame {
 
+    //To do:
+    //Undo redo
+    //Cell cord readout
+    //Generation number
+    //move to non-swing game timer
+    //Render check
+    //Infinite board
+    //Multithreading board check
+    //Export
+
+
+
     public static MainFrame frame;
 
     public MainFrame() {
@@ -46,6 +58,7 @@ public class MainFrame extends JFrame {
                     }
                 }
         );
+
 
 
         add(mainPanel);

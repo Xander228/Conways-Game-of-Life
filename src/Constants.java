@@ -11,16 +11,20 @@ public class Constants {
 
 
 
-    public static final int BOARD_WIDTH = 100;
-    public static final int BOARD_HEIGHT = 50;
+    public static final int BOARD_WIDTH = 500;
+    public static final int BOARD_HEIGHT = 500;
     
     public static final int DESIRED_VIEWPORT_WIDTH = 1000;
     public static final int DESIRED_VIEWPORT_HEIGHT = 500;
-    public static final double CELL_WIDTH = 8;
 
 
-    public static final double CELL_BORDER_WIDTH = 2;
-    public static final int BUTTON_HEIGHT = 100; //The visible width of the board, in pixels
+    public static final int BUTTON_HEIGHT = 100;
+
+    public static final int DEFAULT_CELL_WIDTH = 16;
+    public static final int MAX_CELL_WIDTH = 60;
+    public static final int MIN_CELL_WIDTH = 1;
+    public static final double CELL_BORDER_RATIO = 0.1;
+    public static final double ZOOM_SCALE_FACTOR = 0.1;
 
 
     public static final int IMPORT_WIDTH = 600;

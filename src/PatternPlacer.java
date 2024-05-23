@@ -49,8 +49,8 @@ public class PatternPlacer {
             for(int x = 0; x < pattern.length; x++) {
                 if(pattern[x][y]) {
                     Rectangle2D rect = new Rectangle2D.Double(
-                            (cellBoarderWidth / 2) + ((x + this.x) * GamePanel.cellWidth),
-                            (cellBoarderWidth / 2) + ((y + this.y) * GamePanel.cellWidth),
+                            (cellBoarderWidth / 2) + ((x + this.x) * GamePanel.cellWidth) - (GamePanel.viewPortOffsetX % 1),
+                            (cellBoarderWidth / 2) + ((y + this.y) * GamePanel.cellWidth) - (GamePanel.viewPortOffsetY % 1),
                             GamePanel.cellWidth - cellBoarderWidth,
                             GamePanel.cellWidth - cellBoarderWidth);
                     g2.fill(rect);

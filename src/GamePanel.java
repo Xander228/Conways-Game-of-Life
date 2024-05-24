@@ -17,7 +17,8 @@ public class GamePanel extends JPanel {
     private boolean isDragging;
     public static double viewPortOffsetX;
     public static double viewPortOffsetY;
-    public double liveViewPortOffsetX, liveViewPortOffsetY;
+    public static double liveViewPortOffsetX;
+    public static double liveViewPortOffsetY;
 
     GamePanel thisPanel = this;
 

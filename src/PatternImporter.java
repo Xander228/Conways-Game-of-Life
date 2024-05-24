@@ -108,6 +108,8 @@ public class PatternImporter extends JDialog {
         importString.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 try {
+                    boolean[][] pattern = convertToArray(textArea.getText());
+                    if (pattern == null) return;
                     GamePanel.patternPlacer = new PatternPlacer(convertToArray(textArea.getText()));
                 } catch (FileNotFoundException ex) {
                     throw new RuntimeException(ex);
@@ -182,6 +184,7 @@ public class PatternImporter extends JDialog {
             }
         }
 
+        if(ySize == 0 || xSize == 0) return null;
         boolean[][] output = new boolean[xSize][ySize];
         for (int y = 0; y < ySize; y++){
             ArrayList<Boolean> patternLine = pattern.get(y);

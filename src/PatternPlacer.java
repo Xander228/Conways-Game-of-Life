@@ -49,8 +49,8 @@ public class PatternPlacer {
             for(int x = 0; x < pattern.length; x++) {
                 if(pattern[x][y]) {
                     Rectangle2D rect = new Rectangle2D.Double(
-                            (cellBoarderWidth / 2) + ((x + this.x) * GamePanel.cellWidth) - (GamePanel.viewPortOffsetX % 1),
-                            (cellBoarderWidth / 2) + ((y + this.y) * GamePanel.cellWidth) - (GamePanel.viewPortOffsetY % 1),
+                            (cellBoarderWidth / 2) + ((x + this.x + ((GamePanel.viewPortOffsetX + GamePanel.liveViewPortOffsetX) % 1)) * GamePanel.cellWidth),
+                            (cellBoarderWidth / 2) + ((y + this.y + ((GamePanel.viewPortOffsetY + GamePanel.liveViewPortOffsetY) % 1)) * GamePanel.cellWidth),
                             GamePanel.cellWidth - cellBoarderWidth,
                             GamePanel.cellWidth - cellBoarderWidth);
                     g2.fill(rect);
@@ -61,8 +61,8 @@ public class PatternPlacer {
 
         g.setColor(Constants.HIGHLIGHT_COLOR);
         Rectangle2D rect = new Rectangle2D.Double(
-                (int) (cellBoarderWidth / 2) + (this.x * GamePanel.cellWidth),
-                (int) (cellBoarderWidth / 2) + (this.y * GamePanel.cellWidth),
+                (int) (cellBoarderWidth / 2) + ((this.x + ((GamePanel.viewPortOffsetX + GamePanel.liveViewPortOffsetX) % 1)) * GamePanel.cellWidth),
+                (int) (cellBoarderWidth / 2) + ((this.y + ((GamePanel.viewPortOffsetY + GamePanel.liveViewPortOffsetY) % 1)) * GamePanel.cellWidth),
                 pattern.length * GamePanel.cellWidth,
                 pattern[0].length * GamePanel.cellWidth);
         g2.setStroke(new BasicStroke((float)cellBoarderWidth));

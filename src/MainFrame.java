@@ -10,7 +10,7 @@ public class MainFrame extends JFrame {
     //Cell cord readout
     //Generation number
     //move to non-swing game timer
-    //Render check
+    //Render bound check
     //Infinite board
     //Multithreading board check
     //Export

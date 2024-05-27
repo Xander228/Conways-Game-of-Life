@@ -1,0 +1,95 @@
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import javax.swing.event.*;
+import java.awt.*;
+import java.awt.event.*;
+
+public class TopButtonPanel extends JPanel {
+
+
+
+        TopButtonPanel(MainFrame frame){
+            super();
+            setLayout(new BorderLayout(20, 5));
+            setBackground(Constants.BACKGROUND_COLOR);
+
+            class GameButton extends JButton {
+                Image image;
+
+                GameButton(String imageFilename) {
+                    try {
+                        image = ImageIO.read(this.getClass().getResource(imageFilename));
+                    } catch (Exception e) {
+                        this.setIcon(UIManager.getIcon("OptionPane.questionIcon"));
+                    }
+
+                    this.setFocusable(false);
+                    this.setPreferredSize(new Dimension(32, 32));
+                    this.setBackground(Constants.PRIMARY_COLOR);
+                    this.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, Constants.ACCENT_COLOR));
+                }
+
+                @Override
+                protected void paintComponent(Graphics g) {
+                    super.paintComponent(g);
+                    Graphics2D g2 = (Graphics2D) g;
+                    if (image != null) g2.drawImage(image, 1, 0, 30, 30, this);
+                }
+            }
+
+            JButton home = new GameButton("home.png");
+            home.addActionListener(new ActionListener(){
+                public void actionPerformed(ActionEvent e){
+
+                }
+            });
+
+
+            JButton undo = new GameButton("undo.png");
+            undo.addActionListener(new ActionListener(){
+                public void actionPerformed(ActionEvent e){
+                    GamePanel.stopTimer();
+                    GameState newState = GamePanel.gameHistory.undo();
+                    if (newState == null) return;
+                    GamePanel.generation = newState.getGeneration();
+                    GamePanel.currentBoard = newState.getBoardState();
+
+                }
+            });
+
+            JButton redo = new GameButton("redo.png");
+            redo.addActionListener(new ActionListener(){
+                public void actionPerformed(ActionEvent e){
+                    GamePanel.stopTimer();
+                    GameState newState = GamePanel.gameHistory.redo();
+                    if (newState == null) return;
+                    GamePanel.generation = newState.getGeneration();
+                    GamePanel.currentBoard = newState.getBoardState();
+                }
+            });
+
+
+
+            JPanel eastSubPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+            eastSubPanel.setBackground(Constants.BACKGROUND_COLOR);
+
+            eastSubPanel.add(undo);
+            eastSubPanel.add(redo);
+
+
+            JPanel westSubPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+            westSubPanel.setBackground(Constants.BACKGROUND_COLOR);
+
+            westSubPanel.add(home);
+
+
+
+
+            add(westSubPanel,BorderLayout.WEST);
+            add(eastSubPanel,BorderLayout.EAST);
+
+
+        }
+    }
+
+

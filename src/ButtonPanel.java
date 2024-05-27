@@ -4,21 +4,19 @@ import java.awt.*;
 import java.awt.event.*;
 
 public class ButtonPanel extends JPanel {
-    private Thread sortThread;
 
     ButtonPanel(MainFrame frame){
-        setPreferredSize(new Dimension(0, Constants.BUTTON_HEIGHT));
-        setBorder(BorderFactory.createMatteBorder(25, 50, 25, 50, Constants.BACKGROUND_COLOR));
-        setLayout(new BorderLayout(200, 0));
+        super();
+        setLayout(new BorderLayout(20, 15));
         setBackground(Constants.BACKGROUND_COLOR);
 
         class GameButton extends JButton {
             GameButton(String text){
                 super(text);
                 this.setFocusable(false);
-                this.setPreferredSize(new Dimension(100, 30));
+                this.setPreferredSize(new Dimension(80, 40));
                 this.setBackground(Constants.PRIMARY_COLOR);
-                this.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Constants.ACCENT_COLOR));
+                this.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, Constants.ACCENT_COLOR));
                 this.setFont(new Font("Arial", Font.BOLD, 16));
                 this.setForeground(Constants.BACKGROUND_COLOR);
             }
@@ -31,18 +29,10 @@ public class ButtonPanel extends JPanel {
             }
         });
 
-        JButton stepFwd = new GameButton("Step Forward");
-        stepFwd.setPreferredSize(new Dimension(130, 30));
-        stepFwd.addActionListener(new ActionListener(){
+        JButton step = new GameButton("Step");
+        step.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
-                GamePanel.nextGeneration();
-            }
-        });
-
-        JButton stepRev = new GameButton("Step Reverse");
-        stepRev.setPreferredSize(new Dimension(130, 30));
-        stepRev.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent e){
+                GamePanel.stopTimer();
                 GamePanel.nextGeneration();
             }
         });
@@ -79,7 +69,7 @@ public class ButtonPanel extends JPanel {
         });
 
         JTextField speed = new JTextField("" + 1000 / Constants.DEFAULT_GAME_DELAY,6);
-        speed.setPreferredSize(new Dimension(100, 30));
+        speed.setPreferredSize(new Dimension(80, 40));
         speed.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Constants.ACCENT_COLOR));
         speed.setFont(new Font("Arial", Font.BOLD, 16));
         speed.setForeground(Constants.BACKGROUND_COLOR);
@@ -97,12 +87,12 @@ public class ButtonPanel extends JPanel {
         });
 
 
-        JPanel buttonSubPanel = new JPanel(new GridLayout(1,8,20,0));
+        JPanel buttonSubPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20,5));
         buttonSubPanel.setBackground(Constants.BACKGROUND_COLOR);
 
+
         buttonSubPanel.add(stop);
-        buttonSubPanel.add(stepRev);
-        buttonSubPanel.add(stepFwd);
+        buttonSubPanel.add(step);
         buttonSubPanel.add(start);
         buttonSubPanel.add(importString);
         buttonSubPanel.add(reset);

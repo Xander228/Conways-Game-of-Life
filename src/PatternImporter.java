@@ -13,7 +13,7 @@ public class PatternImporter extends JDialog {
 
     PatternImporter() {
         super((Frame) null, "Import String"); //Call the parent class's constructor
-        this.setSize(Constants.IMPORT_WIDTH, Constants.IMPORT_HEIGHT); //Sets the size of the dialog
+        this.setSize(Constants.IMPORT_PANEL_WIDTH, Constants.IMPORT_PANEL_HEIGHT); //Sets the size of the dialog
         this.setLocationRelativeTo(MainFrame.frame);
         JPanel dialogPanel = new JPanel(); //Declare and initialize the dialogPanel that stores the message, buttons, and scores
         dialogPanel.setBorder(BorderFactory.createMatteBorder(10, 10, 10, 10, Constants.BACKGROUND_COLOR)); //Add a border around the frame

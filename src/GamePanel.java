@@ -7,8 +7,10 @@ import java.awt.geom.Rectangle2D;
 public class GamePanel extends JPanel {
 
     private static Timer gameTimer;
-    public static volatile boolean[][] currentBoard;
+    public static int generation;
+    public static ManagedBoard currentBoard;
 
+    public static GameHistory gameHistory;
     public static PatternPlacer patternPlacer;
     public static JDialog patternImporter;
 
@@ -23,10 +25,14 @@ public class GamePanel extends JPanel {
     GamePanel thisPanel = this;
 
     GamePanel() {
+        super();
         setPreferredSize(new Dimension(Constants.DESIRED_VIEWPORT_WIDTH, Constants.DESIRED_VIEWPORT_HEIGHT));
         setBackground(Constants.ACCENT_COLOR);
-        currentBoard = new boolean[Constants.BOARD_HEIGHT][Constants.BOARD_WIDTH];
         cellWidth = Constants.DEFAULT_CELL_WIDTH;
+
+        generation = 0;
+        gameHistory = new GameHistory();
+        gameHistory.addToHistory(new GameState(generation,currentBoard));
 
         this.addMouseListener(new MouseListener() {
             @Override
@@ -76,6 +82,7 @@ public class GamePanel extends JPanel {
         Timer displayTimer = new Timer(Constants.DISPLAY_LOOP_TIME, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                MainFrame.frame.setTitle("Conway's Game of Life | " + generation);
                 Point p = MouseInfo.getPointerInfo().getLocation();
                 SwingUtilities.convertPointFromScreen(p, thisPanel);
                 if(isDragging){
@@ -100,7 +107,9 @@ public class GamePanel extends JPanel {
     }
 
     public void invertCell(int x, int y){
-        currentBoard[y][x] = !currentBoard[y][x];
+        currentBoard.setCell(x, y, !currentBoard.getCell(x,y));
+        generation = 0;
+        gameHistory.addToHistory(new GameState(generation,currentBoard));
     }
 
     public void centeredZoom(double zoomFactor){
@@ -112,18 +121,30 @@ public class GamePanel extends JPanel {
         viewPortOffsetX -= (p.getX() * (cellWidth / oldCellWidth - 1)) / cellWidth;
         viewPortOffsetY -= (p.getY() * (cellWidth / oldCellWidth - 1)) / cellWidth;
     }
-    public void drawArray(Graphics g){
+    public void drawBoard(Graphics g){
         double cellBoarderWidth = GamePanel.cellWidth * Constants.CELL_BORDER_RATIO;
         Graphics2D g2 = (Graphics2D) g;
         g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        for(int y = 0; y < currentBoard.length; y++) {
-            for(int x = 0; x < currentBoard[0].length; x++) {
-                g.setColor(currentBoard[y][x] ? Constants.LIVE_COLOR : Constants.BACKGROUND_COLOR);
+        double totalViewPortOffsetY = viewPortOffsetY + liveViewPortOffsetY;
+        double totalViewPortOffsetX = viewPortOffsetX + liveViewPortOffsetX;
+
+        int yMin = Math.max(0,
+                (int)Math.floor(-totalViewPortOffsetY));
+        int yMax = Math.min(currentBoard.getYMax(),
+                (int)Math.ceil((this.getHeight() / cellWidth) - totalViewPortOffsetY));
+        int xMin = Math.max(0,
+                (int)Math.floor(-totalViewPortOffsetX));
+        int xMax = Math.min(currentBoard.getXMax(),
+                (int)Math.ceil((this.getWidth() / cellWidth) - totalViewPortOffsetX));
+
+        for(int y = yMin; y < yMax; y++) {
+            for(int x = xMin; x < xMax; x++) {
+                g.setColor(currentBoard.getCell(x, y) ? Constants.LIVE_COLOR : Constants.BACKGROUND_COLOR);
                 Rectangle2D rect = new Rectangle2D.Double(
-                        (cellBoarderWidth / 2) + (x + viewPortOffsetX + liveViewPortOffsetX) * cellWidth,
-                        (cellBoarderWidth / 2) + (y + viewPortOffsetY + liveViewPortOffsetY) * cellWidth,
+                        (cellBoarderWidth / 2) + (x + totalViewPortOffsetX) * cellWidth,
+                        (cellBoarderWidth / 2) + (y + totalViewPortOffsetY) * cellWidth,
                         cellWidth - cellBoarderWidth,
                         cellWidth - cellBoarderWidth);
                 g2.fill(rect);
@@ -132,41 +153,45 @@ public class GamePanel extends JPanel {
     }
 
     public static void resetBoard(){
-            currentBoard = new boolean[Constants.BOARD_HEIGHT][Constants.BOARD_WIDTH];
+            currentBoard = new ManagedBoard();
+            generation = 0;
+            gameHistory.addToHistory(new GameState(generation,currentBoard));
     }
 
     public static void randomizeBoard(){
-        currentBoard = new boolean[Constants.BOARD_HEIGHT][Constants.BOARD_WIDTH];
-        for(int y = 0; y < currentBoard.length; y++) {
-            for (int x = 0; x < currentBoard[0].length; x++) {
-                currentBoard[y][x] = (int)(2 * Math.random()) == 0;
+        currentBoard = new ManagedBoard();
+        for(int y = 0; y < 100; y++) {
+            for (int x = 0; x < 100; x++) {
+                currentBoard.setCell(x, y, (int)(2 * Math.random()) == 0);
             }
         }
+        generation = 0;
+        gameHistory.addToHistory(new GameState(generation,currentBoard));
     }
 
     public static void nextGeneration() {
-        boolean[][] nextBoard = new boolean[Constants.BOARD_HEIGHT][Constants.BOARD_WIDTH];
-        for(int y = 0; y < currentBoard.length; y++) {
-            for (int x = 0; x < currentBoard[0].length; x++) {
-                boolean newCell = false;
-                try {newCell = checkNeighbors(x,y);}
-                catch (Exception e) {}
-                nextBoard[y][x] = newCell;
+        ManagedBoard nextBoard = new ManagedBoard();
+        for(int y = 0; y < currentBoard.yMax; y++) {
+            for (int x = 0; x < currentBoard.xMax; x++) {
+                nextBoard.setCell(x, y, checkNeighbors(x, y));
             }
         }
         currentBoard = nextBoard;
+        generation++;
+        gameHistory.addToHistory(new GameState(generation,currentBoard));
     }
+
     public static boolean checkNeighbors(int x, int y){
         int neighborSum = 0;
-        for (int i = -1; i < 2; i++) if (currentBoard[y + 1][x + i]) neighborSum++;
-        for (int i = -1; i < 2; i++) if (currentBoard[y - 1][x + i]) neighborSum++;
-        if (currentBoard[y][x + 1]) neighborSum++;
-        if (currentBoard[y][x - 1]) neighborSum++;
+        for (int i = -1; i < 2; i++) if (currentBoard.getCell(x + i, y + 1)) neighborSum++;
+        for (int i = -1; i < 2; i++) if (currentBoard.getCell(x + i, y - 1)) neighborSum++;
+        if (currentBoard.getCell(x + 1, y)) neighborSum++;
+        if (currentBoard.getCell(x - 1, y)) neighborSum++;
 
-        if(currentBoard[y][x] && neighborSum < 2) return false;
-        if(currentBoard[y][x] && neighborSum > 3) return false;
+        if(currentBoard.getCell(x, y) && neighborSum < 2) return false;
+        if(currentBoard.getCell(x, y) && neighborSum > 3) return false;
         if(neighborSum == 3) return true;
-        return currentBoard[y][x];
+        return currentBoard.getCell(x,y);
     }
 
     public static void startTimer(){
@@ -188,7 +213,7 @@ public class GamePanel extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        drawArray(g);
+        drawBoard(g);
         if (patternPlacer != null) patternPlacer.drawPattern(g);
 
     }

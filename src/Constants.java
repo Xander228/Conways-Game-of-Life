@@ -26,18 +26,11 @@ public class Constants {
     public static final double CELL_BORDER_RATIO = 0.1;
     public static final double ZOOM_SCALE_FACTOR = 0.1;
 
+    public static final int HISTORY_CAPTURE_LENGTH = 200;
 
-    public static final int IMPORT_WIDTH = 600;
-    public static final int IMPORT_HEIGHT = 300;
 
-    
-
-    public static enum PanelStates {
-        RUN_PHASE (),
-        IDLE_PHASE ();
-
-        PanelStates(){}
-    }
+    public static final int IMPORT_PANEL_WIDTH = 600;
+    public static final int IMPORT_PANEL_HEIGHT = 300;
 
 
     public static final Color BACKGROUND_COLOR = new Color((int)0x212121); //The color used as the background for most panels

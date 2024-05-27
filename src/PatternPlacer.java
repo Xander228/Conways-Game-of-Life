@@ -26,12 +26,14 @@ public class PatternPlacer {
         for (int indexY = 0; indexY < pattern[0].length; indexY++) {
             for (int indexX = 0; indexX < pattern.length; indexX++) {
                 if (!pattern[indexX][indexY]) continue;
-                GamePanel.currentBoard
-                        [y + indexY - (int)GamePanel.viewPortOffsetY]
-                        [x + indexX - (int)GamePanel.viewPortOffsetX]
-                        = true;
+                GamePanel.currentBoard.setCell(
+                        x + indexX - (int)GamePanel.viewPortOffsetX,
+                        y + indexY - (int)GamePanel.viewPortOffsetY,
+                        true
+                        );
             }
         }
+        GamePanel.generation = 0;
     }
 
     public void updateCoords(Point p){

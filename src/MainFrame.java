@@ -6,21 +6,21 @@ import java.awt.event.KeyListener;
 public class MainFrame extends JFrame {
 
     //To do:
-    //Undo redo
     //Cell cord readout
-    //Generation number
+    //home button
     //move to non-swing game timer
     //Render bound check
     //Infinite board
     //Multithreading board check
     //Export
+    //Import catalog
 
 
 
     public static MainFrame frame;
 
     public MainFrame() {
-        //Set up the frame properties
+        super();
         setTitle("Conway's Game of Life"); //Title of the frame
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         JPanel mainPanel = new JPanel();
@@ -29,8 +29,9 @@ public class MainFrame extends JFrame {
         mainPanel.setLayout(new BorderLayout(10,10)); //Sets the edge offset of member panels to properly space them
 
         ButtonPanel buttonPanel = new ButtonPanel(this);
+        TopButtonPanel topButtonPanel = new TopButtonPanel(this);
         GamePanel gamePanel = new GamePanel();
-
+        mainPanel.add(topButtonPanel,BorderLayout.NORTH);
         mainPanel.add(gamePanel);
         mainPanel.add(buttonPanel,BorderLayout.SOUTH);
 

@@ -36,7 +36,15 @@ public class Constants {
     public static final Color BACKGROUND_COLOR = new Color((int)0x212121); //The color used as the background for most panels
     public static final  Color PRIMARY_COLOR = new Color((int)0x555555); //The color used to for headers and text for most panels
     public static final  Color ACCENT_COLOR = new Color((int)0x373737); //The color used to accent the headers and text for some panels
+    public static final  Color X_COLOR = new Color((int)0x442121);
+    public static final  Color Y_COLOR = new Color((int)0x214421);
+    public static final  Color HOME_COLOR = new Color((int)0x212144);
+
     public static final  Color LIVE_COLOR = new Color((int)0xFFFFFF);
+    public static final  Color X_LIVE_COLOR = new Color((int)0xFFAAAA);
+    public static final  Color Y_LIVE_COLOR = new Color((int)0xAAFFAA);
+    public static final  Color HOME_LIVE_COLOR = new Color((int)0xAAAAFF);
+
     public static final  Color HIGHLIGHT_COLOR = new Color((int)0x3FFFFF);
 }
 

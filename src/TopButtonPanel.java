@@ -40,6 +40,8 @@ public class TopButtonPanel extends JPanel {
             JButton home = new GameButton("home.png");
             home.addActionListener(new ActionListener(){
                 public void actionPerformed(ActionEvent e){
+                    GamePanel.gamePanel.setViewPortHome();
+
 
                 }
             });

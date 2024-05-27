@@ -32,12 +32,13 @@ public class ManagedBoard {
         }
     }
 
-    HashSet<Location> board;
-    int xMin, xMax;
-    int yMin, yMax;
-    boolean changed;
+    private HashSet<Location> board;
+    private int xMin, xMax;
+    private int yMin, yMax;
+    private boolean changed;
 
     ManagedBoard(){
+        this.board = new HashSet<Location>();
         changed = false;
         xMin = 0;
         xMax = 0;

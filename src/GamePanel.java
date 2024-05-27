@@ -14,6 +14,8 @@ public class GamePanel extends JPanel {
     public static PatternPlacer patternPlacer;
     public static JDialog patternImporter;
 
+    public static GamePanel gamePanel;
+
     public static double cellWidth;
     private static double dragStartX, dragStartY;
     private boolean isDragging;
@@ -26,9 +28,11 @@ public class GamePanel extends JPanel {
 
     GamePanel() {
         super();
+        gamePanel = this;
+        currentBoard = new ManagedBoard();
         setPreferredSize(new Dimension(Constants.DESIRED_VIEWPORT_WIDTH, Constants.DESIRED_VIEWPORT_HEIGHT));
         setBackground(Constants.ACCENT_COLOR);
-        cellWidth = Constants.DEFAULT_CELL_WIDTH;
+        setViewPortHome(Constants.DESIRED_VIEWPORT_WIDTH, Constants.DESIRED_VIEWPORT_HEIGHT);
 
         generation = 0;
         gameHistory = new GameHistory();
@@ -46,8 +50,8 @@ public class GamePanel extends JPanel {
                         return;
                     }
                     invertCell(
-                            (int)(e.getX() / cellWidth - viewPortOffsetX) ,
-                            (int)(e.getY() / cellWidth - viewPortOffsetY)
+                            (int)Math.floor((e.getX() / cellWidth - viewPortOffsetX)) ,
+                            (int)Math.floor((e.getY() / cellWidth - viewPortOffsetY))
                     );
                 }
                 if(e.getButton() == MouseEvent.BUTTON2 || e.getButton() == MouseEvent.BUTTON3) {
@@ -121,6 +125,19 @@ public class GamePanel extends JPanel {
         viewPortOffsetX -= (p.getX() * (cellWidth / oldCellWidth - 1)) / cellWidth;
         viewPortOffsetY -= (p.getY() * (cellWidth / oldCellWidth - 1)) / cellWidth;
     }
+
+    public void setViewPortHome(){
+        cellWidth = Constants.DEFAULT_CELL_WIDTH;
+        viewPortOffsetX = this.getWidth() / cellWidth / 2;
+        viewPortOffsetY = this.getHeight() / cellWidth / 2;
+    }
+
+    public void setViewPortHome(double x, double y){
+        cellWidth = Constants.DEFAULT_CELL_WIDTH;
+        viewPortOffsetX = x / cellWidth / 2;
+        viewPortOffsetY = y / cellWidth / 2;
+    }
+
     public void drawBoard(Graphics g){
         double cellBoarderWidth = GamePanel.cellWidth * Constants.CELL_BORDER_RATIO;
         Graphics2D g2 = (Graphics2D) g;
@@ -130,18 +147,18 @@ public class GamePanel extends JPanel {
         double totalViewPortOffsetY = viewPortOffsetY + liveViewPortOffsetY;
         double totalViewPortOffsetX = viewPortOffsetX + liveViewPortOffsetX;
 
-        int yMin = Math.max(0,
-                (int)Math.floor(-totalViewPortOffsetY));
-        int yMax = Math.min(currentBoard.getYMax(),
-                (int)Math.ceil((this.getHeight() / cellWidth) - totalViewPortOffsetY));
-        int xMin = Math.max(0,
-                (int)Math.floor(-totalViewPortOffsetX));
-        int xMax = Math.min(currentBoard.getXMax(),
-                (int)Math.ceil((this.getWidth() / cellWidth) - totalViewPortOffsetX));
+        int yMin = (int)Math.floor(-totalViewPortOffsetY);
+        int yMax = (int)Math.ceil((this.getHeight() / cellWidth) - totalViewPortOffsetY);
+        int xMin = (int)Math.floor(-totalViewPortOffsetX);
+        int xMax = (int)Math.ceil((this.getWidth() / cellWidth) - totalViewPortOffsetX);
 
         for(int y = yMin; y < yMax; y++) {
             for(int x = xMin; x < xMax; x++) {
-                g.setColor(currentBoard.getCell(x, y) ? Constants.LIVE_COLOR : Constants.BACKGROUND_COLOR);
+                if(x == 0 && y == 0) g.setColor(currentBoard.getCell(x, y) ? Constants.HOME_LIVE_COLOR : Constants.HOME_COLOR);
+                else if(y == 0) g.setColor(currentBoard.getCell(x, y) ? Constants.X_LIVE_COLOR : Constants.X_COLOR);
+                else if(x == 0) g.setColor(currentBoard.getCell(x, y) ? Constants.Y_LIVE_COLOR : Constants.Y_COLOR);
+                else g.setColor(currentBoard.getCell(x, y) ? Constants.LIVE_COLOR : Constants.BACKGROUND_COLOR);
+
                 Rectangle2D rect = new Rectangle2D.Double(
                         (cellBoarderWidth / 2) + (x + totalViewPortOffsetX) * cellWidth,
                         (cellBoarderWidth / 2) + (y + totalViewPortOffsetY) * cellWidth,
@@ -171,8 +188,8 @@ public class GamePanel extends JPanel {
 
     public static void nextGeneration() {
         ManagedBoard nextBoard = new ManagedBoard();
-        for(int y = 0; y < currentBoard.yMax; y++) {
-            for (int x = 0; x < currentBoard.xMax; x++) {
+        for(int y = currentBoard.getYMin() - 1; y <= currentBoard.getYMax() + 1; y++) {
+            for (int x = currentBoard.getXMin() - 1; x <= currentBoard.getXMax() + 1; x++) {
                 nextBoard.setCell(x, y, checkNeighbors(x, y));
             }
         }

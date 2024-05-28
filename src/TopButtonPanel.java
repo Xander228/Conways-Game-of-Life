@@ -70,6 +70,40 @@ public class TopButtonPanel extends JPanel {
                 }
             });
 
+            class GameLabel extends JLabel {
+                GameLabel(String text){
+                    super(text);
+                    this.setFocusable(false);
+                    this.setBackground(Constants.BACKGROUND_COLOR);
+                    this.setFont(new Font("Arial", Font.BOLD, 12));
+                    this.setForeground(Constants.PRIMARY_COLOR);
+                }
+            }
+
+            JPanel centerSubPanel = new JPanel(new FlowLayout());
+            centerSubPanel.setBackground(Constants.BACKGROUND_COLOR);
+            centerSubPanel.add(new GameLabel("Generations: 00000"));
+            centerSubPanel.add(new GameLabel("Active Board: w:000 h:000"));
+            centerSubPanel.add(new GameLabel("Viewport Dimensions: w:000 h:000"));
+            centerSubPanel.add(new GameLabel("Cursor position: x:000 y:000"));
+            centerSubPanel.add(new GameLabel("Live cells: 0000"));
+            centerSubPanel.add(new GameLabel("FPS: 00"));
+            centerSubPanel.add(new GameLabel("FPS: 000"));
+            //labels:
+            //Generations
+            //Active Board Dimensions
+            //Viewport Dimensions
+            //Cursor position
+            //Live cells
+            //FPS
+            //TPS
+
+
+
+
+
+
+
 
 
             JPanel eastSubPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -88,6 +122,7 @@ public class TopButtonPanel extends JPanel {
 
 
             add(westSubPanel,BorderLayout.WEST);
+            add(centerSubPanel,BorderLayout.CENTER);
             add(eastSubPanel,BorderLayout.EAST);
 
 

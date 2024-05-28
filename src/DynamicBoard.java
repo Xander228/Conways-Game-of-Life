@@ -42,19 +42,13 @@ public class DynamicBoard {
     DynamicBoard(){
         this.board = new HashSet<Location>();
         changed = false;
-        xMin = 0;
-        xMax = 0;
-        yMin = 0;
-        yMax = 0;
+        calculateBounds();
     }
 
     DynamicBoard(HashSet<Location> board){
         this.board = new HashSet<Location>(board);
+        changed = false;
         calculateBounds();
-        xMin = 0;
-        xMax = 0;
-        yMin = 0;
-        yMax = 0;
     }
 
     public void setCell(int x, int y, boolean live){

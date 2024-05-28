@@ -10,7 +10,7 @@ public class TopButtonPanel extends JPanel {
 
         TopButtonPanel(MainFrame frame){
             super();
-            setLayout(new BorderLayout(20, 5));
+            setLayout(new BorderLayout(5, 5));
             setBackground(Constants.BACKGROUND_COLOR);
 
             class GameButton extends JButton {
@@ -80,7 +80,7 @@ public class TopButtonPanel extends JPanel {
                 }
             }
 
-            JPanel centerSubPanel = new JPanel(new FlowLayout());
+            JPanel centerSubPanel = new JPanel(new FlowLayout(FlowLayout.LEFT,20,5));
             centerSubPanel.setBackground(Constants.BACKGROUND_COLOR);
             centerSubPanel.add(new GameLabel("Generations: 00000"));
             centerSubPanel.add(new GameLabel("Active Board: w:000 h:000"));

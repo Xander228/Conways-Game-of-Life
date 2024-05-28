@@ -33,27 +33,38 @@ public class MainFrame extends JFrame {
         mainPanel.add(buttonPanel,BorderLayout.SOUTH);
 
         addKeyListener(
-                //creates a new KeyListener object with the following methods overriden
                 new KeyListener() {
-                    //Must be overriden to create object due to KeyListener being an interface
                     @Override
                     public void keyTyped(KeyEvent e) {
+
                     }
 
                     //Overrides the keyPressed method to add the state of the current pressed key to the map
                     @Override
                     public void keyPressed(KeyEvent e) {
+                        if(e.getKeyCode() == KeyEvent.VK_W || e.getKeyCode() == KeyEvent.VK_UP)
+                            GamePanel.viewPortOffsetY += Constants.PAN_SPEED_FACTOR / GamePanel.cellWidth;
+                        if(e.getKeyCode() == KeyEvent.VK_S || e.getKeyCode() == KeyEvent.VK_DOWN)
+                            GamePanel.viewPortOffsetY -= Constants.PAN_SPEED_FACTOR / GamePanel.cellWidth;
+                        if(e.getKeyCode() == KeyEvent.VK_A || e.getKeyCode() == KeyEvent.VK_LEFT)
+                            GamePanel.viewPortOffsetX += Constants.PAN_SPEED_FACTOR / GamePanel.cellWidth;
+                        if(e.getKeyCode() == KeyEvent.VK_D || e.getKeyCode() == KeyEvent.VK_RIGHT)
+                            GamePanel.viewPortOffsetX -= Constants.PAN_SPEED_FACTOR / GamePanel.cellWidth;
+
                         if(e.getKeyCode() == KeyEvent.VK_R) PatternPlacer.rotatePattern();
                         if(e.getKeyCode() == KeyEvent.VK_ESCAPE) {
                             if(GamePanel.patternImporter != null) GamePanel.patternImporter.dispose();
                             GamePanel.patternPlacer = null;
                         }
+
                     }
 
                     //Overrides the keyReleased method to add the state of the current released key to the map
                     @Override
                     public void keyReleased(KeyEvent e) {
                     }
+
+
                 }
         );
 

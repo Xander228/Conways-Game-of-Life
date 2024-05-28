@@ -6,9 +6,7 @@ import java.awt.geom.Rectangle2D;
 
 public class GamePanel extends JPanel {
 
-    private static Timer gameTimer;
     public static int generation;
-    public static ManagedBoard currentBoard;
 
     public static GameHistory gameHistory;
     public static PatternPlacer patternPlacer;
@@ -24,19 +22,23 @@ public class GamePanel extends JPanel {
     public static double liveViewPortOffsetX;
     public static double liveViewPortOffsetY;
 
+    private long lastTime;
+    public static int fps;
+
     GamePanel thisPanel = this;
 
     GamePanel() {
         super();
+        new BoardManager();
         gamePanel = this;
-        currentBoard = new ManagedBoard();
+        BoardManager.board = new DynamicBoard();
         setPreferredSize(new Dimension(Constants.DESIRED_VIEWPORT_WIDTH, Constants.DESIRED_VIEWPORT_HEIGHT));
         setBackground(Constants.ACCENT_COLOR);
         setViewPortHome(Constants.DESIRED_VIEWPORT_WIDTH, Constants.DESIRED_VIEWPORT_HEIGHT);
 
         generation = 0;
         gameHistory = new GameHistory();
-        gameHistory.addToHistory(new GameState(generation,currentBoard));
+        gameHistory.addToHistory(new GameState(generation, BoardManager.board));
 
         this.addMouseListener(new MouseListener() {
             @Override
@@ -86,7 +88,11 @@ public class GamePanel extends JPanel {
         Timer displayTimer = new Timer(Constants.DISPLAY_LOOP_TIME, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                MainFrame.frame.setTitle("Conway's Game of Life | " + generation);
+                long time = System.nanoTime();
+                long delta = time - lastTime;
+                fps = (int)(1000000000.0 / delta);
+                lastTime = time;
+
                 Point p = MouseInfo.getPointerInfo().getLocation();
                 SwingUtilities.convertPointFromScreen(p, thisPanel);
                 if(isDragging){
@@ -94,26 +100,19 @@ public class GamePanel extends JPanel {
                     liveViewPortOffsetY = (p.getY() - dragStartY) / cellWidth;
                 }
                 if (patternPlacer != null) patternPlacer.updateCoords(p);
+                TopButtonPanel.updateLabels();
                 repaint();
             }
         });
 
-        displayTimer.start();
-
-        gameTimer = new Timer(Constants.DEFAULT_GAME_DELAY, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                nextGeneration();
-            }
-        });
 
         displayTimer.start();
     }
 
     public void invertCell(int x, int y){
-        currentBoard.setCell(x, y, !currentBoard.getCell(x,y));
+        BoardManager.board.setCell(x, y, !BoardManager.board.getCell(x,y));
         generation = 0;
-        gameHistory.addToHistory(new GameState(generation,currentBoard));
+        gameHistory.addToHistory(new GameState(generation, BoardManager.board));
     }
 
     public void centeredZoom(double zoomFactor){
@@ -154,10 +153,10 @@ public class GamePanel extends JPanel {
 
         for(int y = yMin; y < yMax; y++) {
             for(int x = xMin; x < xMax; x++) {
-                if(x == 0 && y == 0) g.setColor(currentBoard.getCell(x, y) ? Constants.HOME_LIVE_COLOR : Constants.HOME_COLOR);
-                else if(y == 0) g.setColor(currentBoard.getCell(x, y) ? Constants.X_LIVE_COLOR : Constants.X_COLOR);
-                else if(x == 0) g.setColor(currentBoard.getCell(x, y) ? Constants.Y_LIVE_COLOR : Constants.Y_COLOR);
-                else g.setColor(currentBoard.getCell(x, y) ? Constants.LIVE_COLOR : Constants.BACKGROUND_COLOR);
+                if(x == 0 && y == 0) g.setColor(BoardManager.board.getCell(x, y) ? Constants.HOME_LIVE_COLOR : Constants.HOME_COLOR);
+                else if(y == 0) g.setColor(BoardManager.board.getCell(x, y) ? Constants.X_LIVE_COLOR : Constants.X_COLOR);
+                else if(x == 0) g.setColor(BoardManager.board.getCell(x, y) ? Constants.Y_LIVE_COLOR : Constants.Y_COLOR);
+                else g.setColor(BoardManager.board.getCell(x, y) ? Constants.LIVE_COLOR : Constants.BACKGROUND_COLOR);
 
                 Rectangle2D rect = new Rectangle2D.Double(
                         (cellBoarderWidth / 2) + (x + totalViewPortOffsetX) * cellWidth,
@@ -170,61 +169,29 @@ public class GamePanel extends JPanel {
     }
 
     public static void resetBoard(){
-            currentBoard = new ManagedBoard();
+            BoardManager.board = new DynamicBoard();
             generation = 0;
-            gameHistory.addToHistory(new GameState(generation,currentBoard));
+            gameHistory.addToHistory(new GameState(generation, BoardManager.board));
     }
 
     public static void randomizeBoard(){
-        currentBoard = new ManagedBoard();
+        BoardManager.board = new DynamicBoard();
         for(int y = 0; y < 100; y++) {
             for (int x = 0; x < 100; x++) {
-                currentBoard.setCell(x, y, (int)(2 * Math.random()) == 0);
+                BoardManager.board.setCell(x, y, (int)(2 * Math.random()) == 0);
             }
         }
         generation = 0;
-        gameHistory.addToHistory(new GameState(generation,currentBoard));
+        gameHistory.addToHistory(new GameState(generation, BoardManager.board));
     }
 
-    public static void nextGeneration() {
-        ManagedBoard nextBoard = new ManagedBoard();
-        for(int y = currentBoard.getYMin() - 1; y <= currentBoard.getYMax() + 1; y++) {
-            for (int x = currentBoard.getXMin() - 1; x <= currentBoard.getXMax() + 1; x++) {
-                nextBoard.setCell(x, y, checkNeighbors(x, y));
-            }
-        }
-        currentBoard = nextBoard;
-        generation++;
-        gameHistory.addToHistory(new GameState(generation,currentBoard));
-    }
-
-    public static boolean checkNeighbors(int x, int y){
-        int neighborSum = 0;
-        for (int i = -1; i < 2; i++) if (currentBoard.getCell(x + i, y + 1)) neighborSum++;
-        for (int i = -1; i < 2; i++) if (currentBoard.getCell(x + i, y - 1)) neighborSum++;
-        if (currentBoard.getCell(x + 1, y)) neighborSum++;
-        if (currentBoard.getCell(x - 1, y)) neighborSum++;
-
-        if(currentBoard.getCell(x, y) && neighborSum < 2) return false;
-        if(currentBoard.getCell(x, y) && neighborSum > 3) return false;
-        if(neighborSum == 3) return true;
-        return currentBoard.getCell(x,y);
-    }
-
-    public static void startTimer(){
-        gameTimer.start();
-    }
-
-    public static void stopTimer(){
-        gameTimer.stop();
-    }
 
     public static void updateTimerSpeed(String freq){
         boolean inputNotOk;
         try{inputNotOk = Integer.parseInt(freq) <= 0;}
         catch (Exception e) {inputNotOk = true;}
-        if (inputNotOk) gameTimer.setDelay(Constants.DEFAULT_GAME_DELAY);
-        else gameTimer.setDelay(1000 / Integer.parseInt(freq));
+        if (inputNotOk) BoardManager.gameTimer.setDelay(Constants.DEFAULT_GAME_DELAY);
+        else BoardManager.gameTimer.setDelay(1000 / Integer.parseInt(freq));
     }
 
     @Override

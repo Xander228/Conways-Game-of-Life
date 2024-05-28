@@ -1,8 +1,8 @@
 public class GameState {
     int generation;
-    ManagedBoard boardState;
+    DynamicBoard boardState;
 
-    GameState(int generation, ManagedBoard boardState){
+    GameState(int generation, DynamicBoard boardState){
         this.generation = generation;
         this.boardState = boardState.copy();
     }
@@ -11,7 +11,7 @@ public class GameState {
         return generation;
     }
 
-    public ManagedBoard getBoardState() {
+    public DynamicBoard getBoardState() {
         return boardState;
     }
 }

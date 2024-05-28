@@ -1,5 +1,5 @@
 import java.util.*;
-public class ManagedBoard {
+public class DynamicBoard {
     private class Location {
         public int x;
         public int y;
@@ -17,6 +17,7 @@ public class ManagedBoard {
             return y;
         }
 
+        @Override
         public boolean equals(Object o) {
             if (this == o)
                 return true;
@@ -27,6 +28,7 @@ public class ManagedBoard {
             return x == point.x && y == point.y;
         }
 
+        @Override
         public int hashCode() {
             return Objects.hash(x, y);
         }
@@ -37,7 +39,7 @@ public class ManagedBoard {
     private int yMin, yMax;
     private boolean changed;
 
-    ManagedBoard(){
+    DynamicBoard(){
         this.board = new HashSet<Location>();
         changed = false;
         xMin = 0;
@@ -46,7 +48,7 @@ public class ManagedBoard {
         yMax = 0;
     }
 
-    ManagedBoard(HashSet<Location> board){
+    DynamicBoard(HashSet<Location> board){
         this.board = new HashSet<Location>(board);
         calculateBounds();
         xMin = 0;
@@ -102,7 +104,11 @@ public class ManagedBoard {
         return yMax;
     }
 
-    public ManagedBoard copy(){
-        return new ManagedBoard(this.board);
+    public int getSize(){
+        return board.size();
+    }
+
+    public DynamicBoard copy(){
+        return new DynamicBoard(this.board);
     }
 }

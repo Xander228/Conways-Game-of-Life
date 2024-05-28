@@ -26,7 +26,7 @@ public class PatternPlacer {
         for (int indexY = 0; indexY < pattern[0].length; indexY++) {
             for (int indexX = 0; indexX < pattern.length; indexX++) {
                 if (!pattern[indexX][indexY]) continue;
-                GamePanel.currentBoard.setCell(
+                BoardManager.board.setCell(
                         x + indexX - (int)GamePanel.viewPortOffsetX,
                         y + indexY - (int)GamePanel.viewPortOffsetY,
                         true
@@ -61,7 +61,7 @@ public class PatternPlacer {
             }
         }
 
-        g.setColor(Constants.HIGHLIGHT_COLOR);
+        g.setColor(Constants.OUTLINE_COLOR);
         Rectangle2D rect = new Rectangle2D.Double(
                 (int) (cellBoarderWidth / 2) + ((this.x + ((GamePanel.viewPortOffsetX + GamePanel.liveViewPortOffsetX) % 1)) * GamePanel.cellWidth),
                 (int) (cellBoarderWidth / 2) + ((this.y + ((GamePanel.viewPortOffsetY + GamePanel.liveViewPortOffsetY) % 1)) * GamePanel.cellWidth),

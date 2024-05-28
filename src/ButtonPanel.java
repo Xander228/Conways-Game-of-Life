@@ -76,13 +76,16 @@ public class ButtonPanel extends JPanel {
         speed.setHorizontalAlignment(SwingConstants.CENTER);
         speed.getDocument().addDocumentListener(new DocumentListener() {
             public void changedUpdate(DocumentEvent e) {
-                GamePanel.updateTimerSpeed(speed.getText());
+                if(GamePanel.updateTimerSpeed(speed.getText())) speed.setFocusable(false);
+                speed.setFocusable(true);
             }
             public void removeUpdate(DocumentEvent e) {
-                GamePanel.updateTimerSpeed(speed.getText());
+                if(GamePanel.updateTimerSpeed(speed.getText())) speed.setFocusable(false);
+                speed.setFocusable(true);
             }
             public void insertUpdate(DocumentEvent e) {
-                GamePanel.updateTimerSpeed(speed.getText());
+                if(GamePanel.updateTimerSpeed(speed.getText())) speed.setFocusable(false);
+                speed.setFocusable(true);
             }
         });
 

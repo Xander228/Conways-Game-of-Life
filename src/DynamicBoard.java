@@ -62,10 +62,17 @@ public class DynamicBoard {
     }
 
     private void calculateBounds(){
-        xMin = 0;
-        xMax = 0;
-        yMin = 0;
-        yMax = 0;
+        xMin = Integer.MAX_VALUE;
+        xMax = Integer.MIN_VALUE;
+        yMin = Integer.MAX_VALUE;
+        yMax = Integer.MIN_VALUE;
+        if(board.isEmpty()) {
+            xMin = 0;
+            xMax = -1;
+            yMin = 0;
+            yMax = -1;
+            return;
+        }
         for(Location point : board){
             xMin = Math.min(xMin, point.getX());
             xMax = Math.max(xMax, point.getX());

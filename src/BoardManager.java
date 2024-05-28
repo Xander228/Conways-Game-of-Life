@@ -14,6 +14,10 @@ public class BoardManager {
         gameTimer = new Timer(Constants.DEFAULT_GAME_DELAY, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                long time = System.nanoTime();
+                long delta = time - lastTime;
+                tps = (int)(1000000000.0 / delta);
+                lastTime = time;
                 nextGeneration();
             }
         });
@@ -68,5 +72,6 @@ public class BoardManager {
 
     public static void stopTimer(){
         gameTimer.stop();
+        tps = 0;
     }
 }

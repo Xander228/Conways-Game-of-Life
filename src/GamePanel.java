@@ -105,7 +105,6 @@ public class GamePanel extends JPanel {
             }
         });
 
-
         displayTimer.start();
     }
 
@@ -186,12 +185,13 @@ public class GamePanel extends JPanel {
     }
 
 
-    public static void updateTimerSpeed(String freq){
+    public static boolean updateTimerSpeed(String freq){
         boolean inputNotOk;
         try{inputNotOk = Integer.parseInt(freq) <= 0;}
         catch (Exception e) {inputNotOk = true;}
         if (inputNotOk) BoardManager.gameTimer.setDelay(Constants.DEFAULT_GAME_DELAY);
         else BoardManager.gameTimer.setDelay(1000 / Integer.parseInt(freq));
+        return inputNotOk;
     }
 
     @Override

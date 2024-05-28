@@ -120,8 +120,8 @@ public class TopButtonPanel extends JPanel {
     public static void updateLabels(){
         generationLabel.setText("Generation: " + GamePanel.generation);
         boardSizeLabel.setText("Active Board Size: w:" +
-                 (BoardManager.board.getXMax() - BoardManager.board.getXMin()) +
-                 " h:" + (BoardManager.board.getYMax() - BoardManager.board.getYMin()));
+                 (1 + BoardManager.board.getXMax() - BoardManager.board.getXMin()) +
+                 " h:" + (1 + BoardManager.board.getYMax() - BoardManager.board.getYMin()));
         Point p = MouseInfo.getPointerInfo().getLocation();
         SwingUtilities.convertPointFromScreen(p, GamePanel.gamePanel);
         cursorPositionLabel.setText("Cursor Position: x:" +

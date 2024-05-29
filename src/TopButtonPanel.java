@@ -129,7 +129,7 @@ public class TopButtonPanel extends JPanel {
                 " y:" + -(int)Math.floor(p.getY() / GamePanel.cellWidth - GamePanel.viewPortOffsetY - GamePanel.liveViewPortOffsetY));
         cellCountLabel.setText("Live Cells: " + BoardManager.board.getSize());
         fpsLabel.setText("FPS: " + GamePanel.fps);
-        tpsLabel.setText("TPS: " + BoardManager.tps);
+        tpsLabel.setText("TPS: " + BoardManager.gameTimer.getTps());
 
     }
 }

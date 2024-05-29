@@ -7,7 +7,7 @@ public class Constants {
     public static final int DESIRED_FPS = 120;
     public static final int DISPLAY_LOOP_TIME = 1000 / DESIRED_FPS;
 
-    public static final int DEFAULT_GAME_DELAY = 100;
+    public static final double DEFAULT_GAME_DELAY = 100;
 
     
     public static final int DESIRED_VIEWPORT_WIDTH = 1000;

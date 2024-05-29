@@ -1,26 +1,59 @@
-import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import javax.xml.stream.Location;
+import java.util.HashSet;
 
 public class BoardManager {
 
-    public static volatile Timer gameTimer;
-    public static volatile DynamicBoard board;
+    public class GameTimer implements Runnable {
 
-    private static volatile long lastTime;
-    public static volatile int tps;
+        private long lastTime;
+        private double delay;
+        private int tps;
+        private volatile boolean running;
+        GameTimer(double delay){
+            this.delay = delay;
+            this.running = false;
+        }
 
-    BoardManager(){
-        gameTimer = new Timer(Constants.DEFAULT_GAME_DELAY, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        public synchronized void start(){
+            running = true;
+            new Thread(this).start();
+        }
+        public synchronized void stop(){
+            running = false;
+            tps = 0;
+        }
+
+        @Override
+        public void run(){
+            while (running){
                 long time = System.nanoTime();
                 long delta = time - lastTime;
-                tps = (int)(1000000000.0 / delta);
-                lastTime = time;
-                nextGeneration();
+                if(delta >= delay * 1000000L) {
+                    nextGeneration();
+                    lastTime = time;
+                    tps = (int)(1000000000.0 / delta);
+                }
             }
-        });
+        }
+
+        public void setDelay(double delay) {
+            this.delay = delay;
+        }
+
+        public int getTps(){
+            return tps;
+        }
+
+    }
+
+
+    public static volatile GameTimer gameTimer;
+    public static volatile DynamicBoard board;
+
+
+
+    BoardManager(){
+        gameTimer = new GameTimer(Constants.DEFAULT_GAME_DELAY);
     }
 
 
@@ -36,6 +69,7 @@ public class BoardManager {
         GamePanel.gameHistory.addToHistory(new GameState(GamePanel.generation, board));
     }
 
+
     public static boolean checkNeighbors(int x, int y){
         int neighborSum = 0;
         for (int i = -1; i < 2; i++) if (board.getCell(x + i, y + 1)) neighborSum++;
@@ -49,20 +83,7 @@ public class BoardManager {
         return board.getCell(x,y);
     }
 
-    public static void startThread(){
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while(true) {
-                    long time = System.nanoTime();
-                    long delta = time - lastTime;
-                    tps = (int)(1000000000.0 / delta);
-                    lastTime = time;
-                    nextGeneration();
-                }
-            }
-        }).start();
-    }
+
 
     public static void startTimer(){
         gameTimer.start();
@@ -72,6 +93,5 @@ public class BoardManager {
 
     public static void stopTimer(){
         gameTimer.stop();
-        tps = 0;
     }
 }

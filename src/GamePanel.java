@@ -190,7 +190,7 @@ public class GamePanel extends JPanel {
         try{inputNotOk = Integer.parseInt(freq) <= 0;}
         catch (Exception e) {inputNotOk = true;}
         if (inputNotOk) BoardManager.gameTimer.setDelay(Constants.DEFAULT_GAME_DELAY);
-        else BoardManager.gameTimer.setDelay(1000 / Integer.parseInt(freq));
+        else BoardManager.gameTimer.setDelay(1000.0 / Integer.parseInt(freq));
         return inputNotOk;
     }
 

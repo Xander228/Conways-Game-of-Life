@@ -1,38 +1,6 @@
 import java.util.*;
 public class DynamicBoard {
-    private class Location {
-        public int x;
-        public int y;
 
-        public Location(int x,int y)
-        {
-            this.x=x;
-            this.y=y;
-        }
-
-        public int getX() {
-            return x;
-        }
-        public int getY() {
-            return y;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o)
-                return true;
-            if (o == null || getClass() != o.getClass())
-                return false;
-
-            Location point = (Location) o;
-            return x == point.x && y == point.y;
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(x, y);
-        }
-    }
 
     private HashSet<Location> board;
     private int xMin, xMax;
@@ -107,6 +75,16 @@ public class DynamicBoard {
 
     public int getSize(){
         return board.size();
+    }
+
+    public HashSet<Location> createCheckList(){
+        HashSet<Location> checkList = new HashSet<Location>();
+        for(Location point : board) {
+            for (int i = -1; i < 2; i++)  neighborSum++;
+            for (int i = -1; i < 2; i++) neighborSum++;
+            if (board.getCell(x + 1, y)) neighborSum++;
+            if (board.getCell(x - 1, y)) neighborSum++;
+        }
     }
 
     public DynamicBoard copy(){

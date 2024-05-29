@@ -68,7 +68,7 @@ public class ButtonPanel extends JPanel {
             }
         });
 
-        JTextField speed = new JTextField("" + 1000 / Constants.DEFAULT_GAME_DELAY,6);
+        JTextField speed = new JTextField("" + (int)(1000.0 / Constants.DEFAULT_GAME_DELAY),6);
         speed.setPreferredSize(new Dimension(80, 40));
         speed.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Constants.ACCENT_COLOR));
         speed.setFont(new Font("Arial", Font.BOLD, 16));

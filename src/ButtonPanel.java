@@ -25,29 +25,29 @@ public class ButtonPanel extends JPanel {
         JButton start = new GameButton("Start");
         start.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
-                BoardManager.startTimer();
+                GamePanel.boardManager.startTimer();
             }
         });
 
         JButton step = new GameButton("Step");
         step.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
-                BoardManager.stopTimer();
-                BoardManager.nextGeneration();
+                GamePanel.boardManager.stopTimer();
+                GamePanel.boardManager.nextGeneration();
             }
         });
 
         JButton stop = new GameButton("Stop");
         stop.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
-                BoardManager.stopTimer();
+                GamePanel.boardManager.stopTimer();
             }
         });
 
         JButton reset = new GameButton("Reset");
         reset.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
-                BoardManager.stopTimer();
+                GamePanel.boardManager.stopTimer();
                 GamePanel.resetBoard();
             }
         });
@@ -55,7 +55,7 @@ public class ButtonPanel extends JPanel {
         JButton random = new GameButton("Random");
         random.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
-                BoardManager.stopTimer();
+                GamePanel.boardManager.stopTimer();
                 GamePanel.randomizeBoard();
             }
         });

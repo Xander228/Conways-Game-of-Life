@@ -55,11 +55,11 @@ public class TopButtonPanel extends JPanel {
         JButton undo = new GameButton("undo.png");
         undo.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
-                BoardManager.stopTimer();
+                GamePanel.boardManager.stopTimer();
                 GameState newState = GamePanel.gameHistory.undo();
                 if (newState == null) return;
                 GamePanel.generation = newState.getGeneration();
-                BoardManager.board = newState.getBoardState();
+                GamePanel.boardManager.setBoard(newState.getBoardState());
 
             }
         });
@@ -67,11 +67,11 @@ public class TopButtonPanel extends JPanel {
         JButton redo = new GameButton("redo.png");
         redo.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
-                BoardManager.stopTimer();
+                GamePanel.boardManager.stopTimer();
                 GameState newState = GamePanel.gameHistory.redo();
                 if (newState == null) return;
                 GamePanel.generation = newState.getGeneration();
-                BoardManager.board = newState.getBoardState();
+                GamePanel.boardManager.setBoard(newState.getBoardState());
             }
         });
 
@@ -119,17 +119,17 @@ public class TopButtonPanel extends JPanel {
 
     public static void updateLabels(){
         generationLabel.setText("Generation: " + GamePanel.generation);
-        boardSizeLabel.setText("Active Board Size: w:" +
-                 (1 + BoardManager.board.getXMax() - BoardManager.board.getXMin()) +
-                 " h:" + (1 + BoardManager.board.getYMax() - BoardManager.board.getYMin()));
+        //boardSizeLabel.setText("Active Board Size: w:" +
+        //         (1 + BoardManager.board.getXMax() - BoardManager.board.getXMin()) +
+        //         " h:" + (1 + BoardManager.board.getYMax() - BoardManager.board.getYMin()));
         Point p = MouseInfo.getPointerInfo().getLocation();
         SwingUtilities.convertPointFromScreen(p, GamePanel.gamePanel);
         cursorPositionLabel.setText("Cursor Position: x:" +
                 (int)Math.floor(p.getX() / GamePanel.cellWidth - GamePanel.viewPortOffsetX - GamePanel.liveViewPortOffsetX) +
                 " y:" + -(int)Math.floor(p.getY() / GamePanel.cellWidth - GamePanel.viewPortOffsetY - GamePanel.liveViewPortOffsetY));
-        cellCountLabel.setText("Live Cells: " + BoardManager.board.getSize());
+        //cellCountLabel.setText("Live Cells: " + BoardManager.board.getSize());
         fpsLabel.setText("FPS: " + GamePanel.fps);
-        tpsLabel.setText("TPS: " + BoardManager.gameTimer.getTps());
+        tpsLabel.setText("TPS: " + GamePanel.boardManager.getTps());
 
     }
 }

@@ -80,11 +80,11 @@ public class DynamicBoard {
     public HashSet<Location> createCheckList(){
         HashSet<Location> checkList = new HashSet<Location>();
         for(Location point : board) {
-            for (int i = -1; i < 2; i++)  neighborSum++;
-            for (int i = -1; i < 2; i++) neighborSum++;
-            if (board.getCell(x + 1, y)) neighborSum++;
-            if (board.getCell(x - 1, y)) neighborSum++;
+            for (int i = -1; i < 2; i++)
+                for (int j = -1; j < 2; j++)
+                    checkList.add(new Location(point.getX() + i, point.getY() + j));
         }
+        return checkList;
     }
 
     public DynamicBoard copy(){

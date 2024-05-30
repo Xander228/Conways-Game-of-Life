@@ -13,6 +13,7 @@ public class GamePanel extends JPanel {
     public static JDialog patternImporter;
 
     public static GamePanel gamePanel;
+    public static BoardManager boardManager;
 
     public static double cellWidth;
     private static double dragStartX, dragStartY;
@@ -29,16 +30,16 @@ public class GamePanel extends JPanel {
 
     GamePanel() {
         super();
-        new BoardManager();
+        boardManager = new BoardManager();
         gamePanel = this;
-        BoardManager.board = new DynamicBoard();
+        boardManager.setBoard(new DynamicBoard());
         setPreferredSize(new Dimension(Constants.DESIRED_VIEWPORT_WIDTH, Constants.DESIRED_VIEWPORT_HEIGHT));
         setBackground(Constants.ACCENT_COLOR);
         setViewPortHome(Constants.DESIRED_VIEWPORT_WIDTH, Constants.DESIRED_VIEWPORT_HEIGHT);
 
         generation = 0;
         gameHistory = new GameHistory();
-        gameHistory.addToHistory(new GameState(generation, BoardManager.board));
+        gameHistory.addToHistory(new GameState(generation, boardManager.getBoard()));
 
         this.addMouseListener(new MouseListener() {
             @Override
@@ -109,9 +110,9 @@ public class GamePanel extends JPanel {
     }
 
     public void invertCell(int x, int y){
-        BoardManager.board.setCell(x, y, !BoardManager.board.getCell(x,y));
+        boardManager.invertCell(x, y);
         generation = 0;
-        gameHistory.addToHistory(new GameState(generation, BoardManager.board));
+        gameHistory.addToHistory(new GameState(generation, boardManager.getBoard()));
     }
 
     public void centeredZoom(double zoomFactor){
@@ -152,10 +153,11 @@ public class GamePanel extends JPanel {
 
         for(int y = yMin; y < yMax; y++) {
             for(int x = xMin; x < xMax; x++) {
-                if(x == 0 && y == 0) g.setColor(BoardManager.board.getCell(x, y) ? Constants.HOME_LIVE_COLOR : Constants.HOME_COLOR);
-                else if(y == 0) g.setColor(BoardManager.board.getCell(x, y) ? Constants.X_LIVE_COLOR : Constants.X_COLOR);
-                else if(x == 0) g.setColor(BoardManager.board.getCell(x, y) ? Constants.Y_LIVE_COLOR : Constants.Y_COLOR);
-                else g.setColor(BoardManager.board.getCell(x, y) ? Constants.LIVE_COLOR : Constants.BACKGROUND_COLOR);
+                boolean cell = boardManager.getCell(x, y);
+                if(x == 0 && y == 0) g.setColor(cell ? Constants.HOME_LIVE_COLOR : Constants.HOME_COLOR);
+                else if(y == 0) g.setColor(cell ? Constants.X_LIVE_COLOR : Constants.X_COLOR);
+                else if(x == 0) g.setColor(cell ? Constants.Y_LIVE_COLOR : Constants.Y_COLOR);
+                else g.setColor(cell ? Constants.LIVE_COLOR : Constants.BACKGROUND_COLOR);
 
                 Rectangle2D rect = new Rectangle2D.Double(
                         (cellBoarderWidth / 2) + (x + totalViewPortOffsetX) * cellWidth,
@@ -168,20 +170,20 @@ public class GamePanel extends JPanel {
     }
 
     public static void resetBoard(){
-            BoardManager.board = new DynamicBoard();
+            boardManager.setBoard(new DynamicBoard());
             generation = 0;
-            gameHistory.addToHistory(new GameState(generation, BoardManager.board));
+            gameHistory.addToHistory(new GameState(generation, boardManager.getBoard()));
     }
 
     public static void randomizeBoard(){
-        BoardManager.board = new DynamicBoard();
-        for(int y = 0; y < 100; y++) {
-            for (int x = 0; x < 100; x++) {
-                BoardManager.board.setCell(x, y, (int)(2 * Math.random()) == 0);
+        boardManager.setBoard(new DynamicBoard());
+        for(int y = -100; y <= 100; y++) {
+            for (int x = -100; x <= 100; x++) {
+                boardManager.setCell(x, y, (int)(2 * Math.random()) == 0);
             }
         }
         generation = 0;
-        gameHistory.addToHistory(new GameState(generation, BoardManager.board));
+        gameHistory.addToHistory(new GameState(generation, boardManager.getBoard()));
     }
 
 
@@ -189,8 +191,8 @@ public class GamePanel extends JPanel {
         boolean inputNotOk;
         try{inputNotOk = Integer.parseInt(freq) <= 0;}
         catch (Exception e) {inputNotOk = true;}
-        if (inputNotOk) BoardManager.gameTimer.setDelay(Constants.DEFAULT_GAME_DELAY);
-        else BoardManager.gameTimer.setDelay(1000.0 / Integer.parseInt(freq));
+        if (inputNotOk) boardManager.setTimerDelay(Constants.DEFAULT_GAME_DELAY);
+        else boardManager.setTimerDelay(1000.0 / Integer.parseInt(freq));
         return inputNotOk;
     }
 

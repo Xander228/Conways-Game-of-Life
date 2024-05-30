@@ -1,9 +1,8 @@
-import javax.xml.stream.Location;
 import java.util.HashSet;
 
 public class BoardManager {
 
-    public class GameTimer implements Runnable {
+    private class GameTimer implements Runnable {
 
         private long lastTime;
         private double delay;
@@ -47,8 +46,8 @@ public class BoardManager {
     }
 
 
-    public static volatile GameTimer gameTimer;
-    public static volatile DynamicBoard board;
+    private volatile GameTimer gameTimer;
+    private volatile DynamicBoard board;
 
 
 
@@ -57,20 +56,17 @@ public class BoardManager {
     }
 
 
-    public static void nextGeneration() {
+    public void nextGeneration() {
         DynamicBoard nextBoard = new DynamicBoard();
-        for(int y = board.getYMin() - 1; y <= board.getYMax() + 1; y++) {
-            for (int x = board.getXMin() - 1; x <= board.getXMax() + 1; x++) {
-                nextBoard.setCell(x, y, checkNeighbors(x, y));
-            }
-        }
+        for (Location point : board.createCheckList())
+            nextBoard.setCell(point.getX(), point.getY(),
+                    checkNeighbors(point.getX(), point.getY()));
         board = nextBoard;
         GamePanel.generation++;
         GamePanel.gameHistory.addToHistory(new GameState(GamePanel.generation, board));
     }
 
-
-    public static boolean checkNeighbors(int x, int y){
+    private boolean checkNeighbors(int x, int y){
         int neighborSum = 0;
         for (int i = -1; i < 2; i++) if (board.getCell(x + i, y + 1)) neighborSum++;
         for (int i = -1; i < 2; i++) if (board.getCell(x + i, y - 1)) neighborSum++;
@@ -83,15 +79,43 @@ public class BoardManager {
         return board.getCell(x,y);
     }
 
-
-
-    public static void startTimer(){
+    public void startTimer(){
         gameTimer.start();
     }
 
-
-
-    public static void stopTimer(){
+    public void stopTimer(){
         gameTimer.stop();
     }
+
+    public void setTimerDelay(double delay){
+        gameTimer.setDelay(delay);
+    }
+
+    public void invertCell(int x, int y){
+        board.setCell(x, y, !board.getCell(x,y));
+    }
+
+    public void setBoard(DynamicBoard board){
+        gameTimer.stop();
+        this.board = board;
+    }
+    public void setCell(int x, int y, boolean cell){
+        board.setCell(x, y, cell);
+    }
+
+    public DynamicBoard getBoard(){
+        return board;
+    }
+    public boolean getCell(int x, int y){
+        return board.getCell(x,y);
+    }
+
+    public int getTps(){
+        return gameTimer.getTps();
+    }
+
+    public int getGeneration(){
+        return board.getSize();
+    }
+
 }

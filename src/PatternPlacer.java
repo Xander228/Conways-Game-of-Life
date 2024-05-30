@@ -26,7 +26,7 @@ public class PatternPlacer {
         for (int indexY = 0; indexY < pattern[0].length; indexY++) {
             for (int indexX = 0; indexX < pattern.length; indexX++) {
                 if (!pattern[indexX][indexY]) continue;
-                BoardManager.board.setCell(
+                GamePanel.boardManager.setCell(
                         x + indexX - (int)GamePanel.viewPortOffsetX,
                         y + indexY - (int)GamePanel.viewPortOffsetY,
                         true

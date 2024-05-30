@@ -157,7 +157,8 @@ public class PatternImporter extends JDialog {
             } catch (Exception e) {
                 repeatEOL = 0;
             }
-            String line = patternCode.substring(lastEOLIndex + 1, lastNormIndex + 1);
+
+            String line = patternCode.substring(lastEOLIndex + 1, Math.max(lastEOLIndex + 1, lastNormIndex + 1));
             lastEOLIndex = i;
 
             ArrayList<Boolean> patternLine = new ArrayList<Boolean>();

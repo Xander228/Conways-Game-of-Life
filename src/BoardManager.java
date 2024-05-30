@@ -1,4 +1,7 @@
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
+import java.util.concurrent.*;
 
 public class BoardManager {
 
@@ -49,19 +52,41 @@ public class BoardManager {
 
     private volatile GameTimer gameTimer;
     private volatile DynamicBoard board;
+    ExecutorService executor;
 
 
 
     BoardManager(){
         gameTimer = new GameTimer(Constants.DEFAULT_GAME_DELAY);
+         executor = Executors.newFixedThreadPool(10);
     }
 
 
     public synchronized void nextGeneration() {
         DynamicBoard nextBoard = new DynamicBoard();
-        for (Location point : board.createCheckList())
-            nextBoard.setCell(point.getX(), point.getY(),
-                    checkNeighbors(point.getX(), point.getY()));
+        List<Callable<String>> checkCoords = new ArrayList<Callable<String>>();
+        for (Location point : board.createCheckList()) {
+            checkCoords.add(new Callable<String>(){
+                @Override
+                public String call () {
+                    nextBoard.setCell(point.getX(), point.getY(), checkNeighbors(point.getX(), point.getY()));
+                    return "executed";
+                }
+            });
+        }
+        List<Future<String>> executorStates;
+        try {
+            executorStates = executor.invokeAll(checkCoords);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        boolean notExecuted = true;
+        while(notExecuted){
+            notExecuted = false;
+            for (Future<String> executorState : executorStates) {
+                if (!executorState.isDone()) notExecuted = true;
+            }
+        }
         board = nextBoard;
         GamePanel.generation++;
         GamePanel.gameHistory.addToHistory(new GameState(GamePanel.generation, board));

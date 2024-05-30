@@ -6,8 +6,6 @@ import java.awt.event.KeyListener;
 public class MainFrame extends JFrame {
 
     //To do:
-    //Cell cord readout
-    //move to non-swing game timer
     //Multithreading board check
     //Export
     //Import catalog

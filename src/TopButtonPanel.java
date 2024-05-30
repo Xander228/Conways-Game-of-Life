@@ -119,15 +119,15 @@ public class TopButtonPanel extends JPanel {
 
     public static void updateLabels(){
         generationLabel.setText("Generation: " + GamePanel.generation);
-        //boardSizeLabel.setText("Active Board Size: w:" +
-        //         (1 + BoardManager.board.getXMax() - BoardManager.board.getXMin()) +
-        //         " h:" + (1 + BoardManager.board.getYMax() - BoardManager.board.getYMin()));
+        boardSizeLabel.setText("Active Board Size: w:" +
+                 (1 + GamePanel.boardManager.getXMax() - GamePanel.boardManager.getXMin()) +
+                 " h:" + (1 + GamePanel.boardManager.getYMax() - GamePanel.boardManager.getYMin()));
         Point p = MouseInfo.getPointerInfo().getLocation();
         SwingUtilities.convertPointFromScreen(p, GamePanel.gamePanel);
         cursorPositionLabel.setText("Cursor Position: x:" +
                 (int)Math.floor(p.getX() / GamePanel.cellWidth - GamePanel.viewPortOffsetX - GamePanel.liveViewPortOffsetX) +
                 " y:" + -(int)Math.floor(p.getY() / GamePanel.cellWidth - GamePanel.viewPortOffsetY - GamePanel.liveViewPortOffsetY));
-        //cellCountLabel.setText("Live Cells: " + BoardManager.board.getSize());
+        cellCountLabel.setText("Live Cells: " + GamePanel.boardManager.getSize());
         fpsLabel.setText("FPS: " + GamePanel.fps);
         tpsLabel.setText("TPS: " + GamePanel.boardManager.getTps());
 

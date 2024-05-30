@@ -2,6 +2,7 @@ import java.util.HashSet;
 
 public class BoardManager {
 
+
     private class GameTimer implements Runnable {
 
         private long lastTime;
@@ -56,7 +57,7 @@ public class BoardManager {
     }
 
 
-    public void nextGeneration() {
+    public synchronized void nextGeneration() {
         DynamicBoard nextBoard = new DynamicBoard();
         for (Location point : board.createCheckList())
             nextBoard.setCell(point.getX(), point.getY(),
@@ -91,7 +92,7 @@ public class BoardManager {
         gameTimer.setDelay(delay);
     }
 
-    public void invertCell(int x, int y){
+    public synchronized void invertCell(int x, int y){
         board.setCell(x, y, !board.getCell(x,y));
     }
 
@@ -100,6 +101,7 @@ public class BoardManager {
         this.board = board;
     }
     public void setCell(int x, int y, boolean cell){
+        gameTimer.stop();
         board.setCell(x, y, cell);
     }
 
@@ -114,8 +116,26 @@ public class BoardManager {
         return gameTimer.getTps();
     }
 
-    public int getGeneration(){
+    public int getSize(){
         return board.getSize();
     }
+
+    public int getXMax(){
+        return board.getXMax();
+    }
+
+    public int getXMin(){
+        return board.getXMin();
+    }
+
+    public int getYMax(){
+        return board.getYMax();
+    }
+
+    public int getYMin(){
+        return board.getYMin();
+    }
+
+
 
 }

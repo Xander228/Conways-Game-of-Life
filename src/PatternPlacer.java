@@ -70,13 +70,5 @@ public class PatternPlacer {
         g2.setStroke(new BasicStroke((float)cellBoarderWidth));
         g2.draw(rect);
 
-        rect = new Rectangle2D.Double(
-                (int) (cellBoarderWidth / 2) + ((this.x + ((GamePanel.viewPortOffsetX + GamePanel.liveViewPortOffsetX) % 1)) * GamePanel.cellWidth),
-                (int) (cellBoarderWidth / 2) + ((this.y + ((GamePanel.viewPortOffsetY + GamePanel.liveViewPortOffsetY) % 1)) * GamePanel.cellWidth) - (3 * GamePanel.cellWidth),
-                10 * GamePanel.cellWidth ,
-                3 * GamePanel.cellWidth );
-        g2.setStroke(new BasicStroke((float)cellBoarderWidth));
-        g2.fill(rect);
-        g2.draw(rect);
     }
 }

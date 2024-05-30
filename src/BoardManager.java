@@ -80,11 +80,11 @@ public class BoardManager {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        boolean notExecuted = true;
-        while(notExecuted){
-            notExecuted = false;
+        boolean executed = false;
+        while(!executed){
+            executed = true;
             for (Future<String> executorState : executorStates) {
-                if (!executorState.isDone()) notExecuted = true;
+                if (!executorState.isDone()) executed = false;
             }
         }
         board = nextBoard;

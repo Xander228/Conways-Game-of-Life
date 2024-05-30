@@ -19,7 +19,7 @@ public class DynamicBoard {
         calculateBounds();
     }
 
-    public void setCell(int x, int y, boolean live){
+    public synchronized void setCell(int x, int y, boolean live){
         if(live) board.add(new Location(x,y));
         else board.remove(new Location(x,y));
         changed = true;

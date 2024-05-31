@@ -58,7 +58,7 @@ public class BoardManager {
 
     BoardManager(){
         gameTimer = new GameTimer(Constants.DEFAULT_GAME_DELAY);
-         executor = Executors.newFixedThreadPool(1);
+         executor = Executors.newFixedThreadPool(10);
     }
 
 

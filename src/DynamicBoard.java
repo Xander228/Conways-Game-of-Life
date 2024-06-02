@@ -1,8 +1,9 @@
 import java.util.*;
+
 public class DynamicBoard {
 
 
-    private HashSet<Location> board;
+    private volatile HashSet<Location> board;
     private int xMin, xMax;
     private int yMin, yMax;
     private boolean changed;
@@ -85,6 +86,10 @@ public class DynamicBoard {
                     checkList.add(new Location(point.getX() + i, point.getY() + j));
         }
         return checkList;
+    }
+
+    public HashSet<Location> getSet(){
+        return this.board;
     }
 
     public DynamicBoard copy(){

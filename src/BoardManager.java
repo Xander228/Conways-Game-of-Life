@@ -80,14 +80,15 @@ public class BoardManager {
                     boolean[][] boardCache = new boolean[5][5];
                     for (int i = -2; i <= 2; i++) {
                         for (int j = -2; j <= 2; j++) {
-                            boardCache[i + xCenter][j + yCenter] =
+                            boardCache[i + 2][j + 2] =
                                     board.getCell(i + xCenter, j + yCenter);
                         }
                     }
+
                     for (int i = -1; i <= 1; i++) {
                         for (int j = -1; j <= 1; j++) {
-                            if(checkLocalNeighbors(i, j, boardCache))
-                                locations.add(new Location(point.getX() + i, point.getY() + j));
+                            if(checkLocalNeighbors(i + 2, j + 2, boardCache))
+                                locations.add(new Location(xCenter + i, yCenter + j));
                         }
                     }
                     nextBoard.setCell(locations);
@@ -117,8 +118,8 @@ public class BoardManager {
 
     private boolean checkLocalNeighbors(int x, int y, boolean[][] boardCache){
         int neighborSum = 0;
-        for (int i = -1; i < 2; i++) if (boardCache[x + i][ y + 1]) neighborSum++;
-        for (int i = -1; i < 2; i++) if (boardCache[x + i][y - 1]) neighborSum++;
+        for (int i = -1; i <= 1; i++) if (boardCache[x + i][y + 1]) neighborSum++;
+        for (int i = -1; i <= 1; i++) if (boardCache[x + i][y - 1]) neighborSum++;
         if (boardCache[x + 1][y]) neighborSum++;
         if (boardCache[x - 1][y]) neighborSum++;
 

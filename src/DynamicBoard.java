@@ -26,6 +26,11 @@ public class DynamicBoard {
         changed = true;
     }
 
+    public synchronized void setCell(List<Location> locations){
+        board.addAll(locations);
+        changed = true;
+    }
+
     public boolean getCell(int x, int y){
         return board.contains(new Location(x,y));
     }
@@ -76,16 +81,6 @@ public class DynamicBoard {
 
     public int getSize(){
         return board.size();
-    }
-
-    public HashSet<Location> createCheckList(){
-        HashSet<Location> checkList = new HashSet<Location>();
-        for(Location point : board) {
-            for (int i = -1; i < 2; i++)
-                for (int j = -1; j < 2; j++)
-                    checkList.add(new Location(point.getX() + i, point.getY() + j));
-        }
-        return checkList;
     }
 
     public HashSet<Location> getSet(){

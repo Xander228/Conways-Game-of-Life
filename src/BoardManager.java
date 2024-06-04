@@ -64,7 +64,7 @@ public class BoardManager {
 
     BoardManager(){
         gameTimer = new GameTimer(Constants.DEFAULT_GAME_DELAY);
-         executor = Executors.newFixedThreadPool(20);
+         executor = Executors.newFixedThreadPool(10);
     }
 
     public synchronized void nextGeneration() {
@@ -74,12 +74,23 @@ public class BoardManager {
             callList.add(new Callable<String>() {
                 @Override
                 public String call() {
-                    for (int i = -1; i < 2; i++) {
-                        for (int j = -1; j < 2; j++) {
-                            nextBoard.setCell(point.getX() + i, point.getY() + j,
-                                    checkNeighbors(point.getX() + i, point.getY() + j));
+                    List<Location> locations = new ArrayList<Location>();
+                    int xCenter = point.getX();
+                    int yCenter = point.getY();
+                    boolean[][] boardCache = new boolean[5][5];
+                    for (int i = -2; i <= 2; i++) {
+                        for (int j = -2; j <= 2; j++) {
+                            boardCache[i + xCenter][j + yCenter] =
+                                    board.getCell(i + xCenter, j + yCenter);
                         }
                     }
+                    for (int i = -1; i <= 1; i++) {
+                        for (int j = -1; j <= 1; j++) {
+                            if(checkLocalNeighbors(i, j, boardCache))
+                                locations.add(new Location(point.getX() + i, point.getY() + j));
+                        }
+                    }
+                    nextBoard.setCell(locations);
                     return "executed";
                 }
             });
@@ -91,6 +102,7 @@ public class BoardManager {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+
         boolean executed = false;
         while(!executed){
             executed = true;
@@ -103,47 +115,18 @@ public class BoardManager {
         GamePanel.gameHistory.addToHistory(new GameState(GamePanel.generation, board));
     }
 
-    public synchronized void nextGeneration2() {
-        DynamicBoard nextBoard = new DynamicBoard();
-        List<Callable<String>> checkCoords = new ArrayList<Callable<String>>();
-        for (Location point : board.createCheckList()) {
-            checkCoords.add(new Callable<String>(){
-                @Override
-                public String call () {
-                    nextBoard.setCell(point.getX(), point.getY(), checkNeighbors(point.getX(), point.getY()));
-                    return "executed";
-                }
-            });
-        }
-        List<Future<String>> executorStates;
-        try {
-            executorStates = executor.invokeAll(checkCoords);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-        boolean executed = false;
-        while(!executed){
-            executed = true;
-            for (Future<String> executorState : executorStates) {
-                if (!executorState.isDone()) executed = false;
-            }
-        }
-        board = nextBoard;
-        GamePanel.generation++;
-        GamePanel.gameHistory.addToHistory(new GameState(GamePanel.generation, board));
-    }
-
-    private boolean checkNeighbors(int x, int y){
+    private boolean checkLocalNeighbors(int x, int y, boolean[][] boardCache){
         int neighborSum = 0;
-        for (int i = -1; i < 2; i++) if (board.getCell(x + i, y + 1)) neighborSum++;
-        for (int i = -1; i < 2; i++) if (board.getCell(x + i, y - 1)) neighborSum++;
-        if (board.getCell(x + 1, y)) neighborSum++;
-        if (board.getCell(x - 1, y)) neighborSum++;
+        for (int i = -1; i < 2; i++) if (boardCache[x + i][ y + 1]) neighborSum++;
+        for (int i = -1; i < 2; i++) if (boardCache[x + i][y - 1]) neighborSum++;
+        if (boardCache[x + 1][y]) neighborSum++;
+        if (boardCache[x - 1][y]) neighborSum++;
 
-        if(board.getCell(x, y) && neighborSum < 2) return false;
-        if(board.getCell(x, y) && neighborSum > 3) return false;
+        boolean currentCell = boardCache[x][y];
+        if(currentCell && neighborSum < 2) return false;
+        if(currentCell && neighborSum > 3) return false;
         if(neighborSum == 3) return true;
-        return board.getCell(x,y);
+        return currentCell;
     }
 
     public void startTimer(){

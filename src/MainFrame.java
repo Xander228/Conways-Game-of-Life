@@ -6,7 +6,6 @@ import java.awt.event.KeyListener;
 public class MainFrame extends JFrame {
 
     //To do:
-    //Multithreading board check
     //Export
     //Import catalog
 

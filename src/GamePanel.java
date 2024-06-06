@@ -101,8 +101,10 @@ public class GamePanel extends JPanel {
                     liveViewPortOffsetY = (p.getY() - dragStartY) / cellWidth;
                 }
                 if (patternPlacer != null) patternPlacer.updateCoords(p);
+
                 TopButtonPanel.updateLabels();
                 repaint();
+
             }
         });
 
@@ -137,38 +139,6 @@ public class GamePanel extends JPanel {
         viewPortOffsetY = y / cellWidth / 2;
     }
 
-    public void drawBoard(Graphics g){
-        double cellBoarderWidth = GamePanel.cellWidth * Constants.CELL_BORDER_RATIO;
-        Graphics2D g2 = (Graphics2D) g;
-        g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-        double totalViewPortOffsetY = viewPortOffsetY + liveViewPortOffsetY;
-        double totalViewPortOffsetX = viewPortOffsetX + liveViewPortOffsetX;
-
-        int yMin = (int)Math.floor(-totalViewPortOffsetY);
-        int yMax = (int)Math.ceil((this.getHeight() / cellWidth) - totalViewPortOffsetY);
-        int xMin = (int)Math.floor(-totalViewPortOffsetX);
-        int xMax = (int)Math.ceil((this.getWidth() / cellWidth) - totalViewPortOffsetX);
-
-        for(int y = yMin; y < yMax; y++) {
-            for(int x = xMin; x < xMax; x++) {
-                boolean cell = boardManager.getCell(x, y);
-                if(x == 0 && y == 0) g.setColor(cell ? Constants.HOME_LIVE_COLOR : Constants.HOME_COLOR);
-                else if(y == 0) g.setColor(cell ? Constants.X_LIVE_COLOR : Constants.X_COLOR);
-                else if(x == 0) g.setColor(cell ? Constants.Y_LIVE_COLOR : Constants.Y_COLOR);
-                else g.setColor(cell ? Constants.LIVE_COLOR : Constants.BACKGROUND_COLOR);
-
-                Rectangle2D rect = new Rectangle2D.Double(
-                        (cellBoarderWidth / 2) + (x + totalViewPortOffsetX) * cellWidth,
-                        (cellBoarderWidth / 2) + (y + totalViewPortOffsetY) * cellWidth,
-                        cellWidth - cellBoarderWidth,
-                        cellWidth - cellBoarderWidth);
-                g2.fill(rect);
-            }
-        }
-    }
-
     public static void resetBoard(){
             boardManager.setBoard(new DynamicBoard());
             generation = 0;
@@ -199,7 +169,7 @@ public class GamePanel extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        drawBoard(g);
+        DisplayController.drawBoard(g);
         if (patternPlacer != null) patternPlacer.drawPattern(g);
 
     }

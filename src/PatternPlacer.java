@@ -14,7 +14,6 @@ public class PatternPlacer {
     public static void rotatePattern(){
         boolean[][] newPattern = new boolean[pattern[0].length][pattern.length];
         for (int indexY = 0; indexY < pattern[0].length; indexY++) {
-            //Index through the x-axis of the tetromino
             for (int indexX = 0; indexX < pattern.length; indexX++) {
                 newPattern[pattern[0].length - indexY - 1][indexX] = pattern[indexX][indexY];
             }

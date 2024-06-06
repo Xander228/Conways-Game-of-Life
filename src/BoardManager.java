@@ -1,4 +1,6 @@
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.*;
 
@@ -34,7 +36,7 @@ public class BoardManager {
                 long time = System.nanoTime();
                 long delta = time - lastTime;
                 if(delta >= delay * 1000000L) {
-                    nextGeneration();
+                    nextGeneration2();
                     lastTime = time;
                     tps = (int)(1000000000.0 / delta);
                 }
@@ -64,7 +66,7 @@ public class BoardManager {
 
     BoardManager(){
         gameTimer = new GameTimer(Constants.DEFAULT_GAME_DELAY);
-         executor = Executors.newFixedThreadPool(10);
+         executor = Executors.newFixedThreadPool(16);
     }
 
     public synchronized void nextGeneration() {
@@ -96,6 +98,122 @@ public class BoardManager {
                 }
             });
         }
+
+
+
+        List<Future<String>> executorStates;
+        try {
+            executorStates = executor.invokeAll(callList);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        boolean executed = false;
+        while(!executed){
+            executed = true;
+            for (Future<String> executorState : executorStates) {
+                if (!executorState.isDone()) executed = false;
+            }
+        }
+        board = nextBoard;
+        GamePanel.generation++;
+        GamePanel.gameHistory.addToHistory(new GameState(GamePanel.generation, board));
+    }
+
+    public synchronized void nextGeneration2() {
+        ConcurrentHashMap<Location, Boolean> nextCells = new ConcurrentHashMap<Location, Boolean>();
+
+        List<Callable<String>> callList = new ArrayList<Callable<String>>();
+        for(Location point : board.getSet()) {
+            callList.add(new Callable<String>() {
+                @Override
+                public String call() {
+                    HashMap<Location, Boolean> locations = new HashMap<Location, Boolean>();
+
+                    int xCenter = point.getX();
+                    int yCenter = point.getY();
+                    boolean[][] boardCache = new boolean[5][5];
+                    for (int i = -2; i <= 2; i++) {
+                        for (int j = -2; j <= 2; j++) {
+                            boardCache[i + 2][j + 2] =
+                                    board.getCell(i + xCenter, j + yCenter);
+                        }
+                    }
+
+                    for (int i = -1; i <= 1; i++) {
+                        for (int j = -1; j <= 1; j++) {
+                            Location currentLocation = new Location(xCenter + i, yCenter + j);
+
+                            if(nextCells.containsKey(currentLocation)) continue;
+
+                            locations.put(currentLocation, checkLocalNeighbors(i + 2, j + 2, boardCache));
+
+                        }
+                    }
+                    nextCells.putAll(locations);
+                    return "executed";
+                }
+            });
+        }
+
+
+
+        List<Future<String>> executorStates;
+        try {
+            executorStates = executor.invokeAll(callList);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        boolean executed = false;
+        while(!executed){
+            executed = true;
+            for (Future<String> executorState : executorStates) {
+                if (!executorState.isDone()) executed = false;
+            }
+        }
+        DynamicBoard nextBoard = new DynamicBoard();
+        List<Location> locations = new ArrayList<Location>();
+        for(Location point : nextCells.keySet()) {
+            if(nextCells.get(point)) locations.add(point);
+        }
+        nextBoard.setCell(locations);
+        board = nextBoard;
+        GamePanel.generation++;
+        GamePanel.gameHistory.addToHistory(new GameState(GamePanel.generation, board));
+    }
+
+    public synchronized void nextGeneration3() {
+        DynamicBoard nextBoard = new DynamicBoard();
+        List<Callable<String>> callList = new ArrayList<Callable<String>>();
+        for(Location point : board.getSet()) {
+            callList.add(new Callable<String>() {
+                @Override
+                public String call() {
+                    List<Location> locations = new ArrayList<Location>();
+                    int xCenter = point.getX();
+                    int yCenter = point.getY();
+                    boolean[][] boardCache = new boolean[5][5];
+                    for (int i = -2; i <= 2; i++) {
+                        for (int j = -2; j <= 2; j++) {
+                            boardCache[i + 2][j + 2] =
+                                    board.getCell(i + xCenter, j + yCenter);
+                        }
+                    }
+
+                    for (int i = -1; i <= 1; i++) {
+                        for (int j = -1; j <= 1; j++) {
+                            if(checkLocalNeighbors(i + 2, j + 2, boardCache))
+                                locations.add(new Location(xCenter + i, yCenter + j));
+                        }
+                    }
+                    nextBoard.setCell(locations);
+                    return "executed";
+                }
+            });
+        }
+
+
 
         List<Future<String>> executorStates;
         try {

@@ -5,7 +5,9 @@ import java.awt.event.KeyListener;
 
 public class MainFrame extends JFrame {
 
-    //To do:
+    //Todo:
+    //modify new board hash to store whether a cell has been calulated
+    //or create new to do hash and write to it prior to calculations
     //Export
     //Import catalog
 
@@ -15,7 +17,7 @@ public class MainFrame extends JFrame {
 
     public MainFrame() {
         super();
-        setTitle("Conway's Game of Life"); //Title of the frame
+        setTitle("Conway's Game of Life");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         JPanel mainPanel = new JPanel();
         mainPanel.setBorder(BorderFactory.createMatteBorder(10,10,10,10,Constants.ACCENT_COLOR)); //Add a border around the frame

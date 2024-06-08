@@ -5,8 +5,8 @@ public class DisplayController {
 
 
     public static void drawBoard(Graphics g){
-        if(GamePanel.cellWidth >= 2) renderFullRes(g);
-        else renderOptimizedRes(g, 2 / GamePanel.cellWidth);
+        if(GamePanel.cellWidth >= 1) renderFullRes(g);
+        else renderOptimizedRes(g, 1 / GamePanel.cellWidth);
     }
 
     public static void renderFullRes(Graphics g){
@@ -30,7 +30,8 @@ public class DisplayController {
                 if(x == 0 && y == 0) g.setColor(cell ? Constants.HOME_LIVE_COLOR : Constants.HOME_COLOR);
                 else if(y == 0) g.setColor(cell ? Constants.X_LIVE_COLOR : Constants.X_COLOR);
                 else if(x == 0) g.setColor(cell ? Constants.Y_LIVE_COLOR : Constants.Y_COLOR);
-                else g.setColor(cell ? Constants.LIVE_COLOR : Constants.BACKGROUND_COLOR);
+                else if(cell) g.setColor(Constants.LIVE_COLOR);
+                else continue;
 
                 ///*
                 Rectangle2D rect = new Rectangle2D.Double(
@@ -40,6 +41,24 @@ public class DisplayController {
                         GamePanel.cellWidth - cellBoarderWidth);
                 g2.fill(rect);
             }
+        }
+        if(cellBoarderWidth <= .2) return;
+        g.setColor(Constants.ACCENT_COLOR);
+        for(int y = yMin; y < yMax; y++) {
+            Rectangle2D rect = new Rectangle2D.Double(
+                    0,
+                    (-cellBoarderWidth / 2) + (y + totalViewPortOffsetY) * GamePanel.cellWidth,
+                    GamePanel.gamePanel.getWidth(),
+                    cellBoarderWidth);
+            g2.fill(rect);
+        }
+        for(int x = xMin; x < xMax; x++) {
+            Rectangle2D rect = new Rectangle2D.Double(
+                    (-cellBoarderWidth / 2) + (x + totalViewPortOffsetX) * GamePanel.cellWidth,
+                    0,
+                    cellBoarderWidth,
+                    GamePanel.gamePanel.getHeight());
+            g2.fill(rect);
         }
     }
 
@@ -62,7 +81,8 @@ public class DisplayController {
                 if(x == 0 && y == 0) g.setColor(cell ? Constants.HOME_LIVE_COLOR : Constants.HOME_COLOR);
                 else if(y == 0) g.setColor(cell ? Constants.X_LIVE_COLOR : Constants.X_COLOR);
                 else if(x == 0) g.setColor(cell ? Constants.Y_LIVE_COLOR : Constants.Y_COLOR);
-                else g.setColor(cell ? Constants.LIVE_COLOR : Constants.BACKGROUND_COLOR);
+                else if(cell) g.setColor(Constants.LIVE_COLOR);
+                else continue;
 
                 g.fillRect(
                         (int)((x * scaleDownFactor + totalViewPortOffsetX) * GamePanel.cellWidth),

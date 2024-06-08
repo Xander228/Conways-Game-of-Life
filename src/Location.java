@@ -3,6 +3,7 @@ import java.util.Objects;
 public class Location {
     public int x;
     public int y;
+    public int hash;
 
     public Location(int x,int y)
     {
@@ -19,17 +20,17 @@ public class Location {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (o == null || getClass() != o.getClass())
+        try {
+            Location point = (Location) o;
+            return x == point.x && y == point.y;
+        } catch (ClassCastException e) {
             return false;
-
-        Location point = (Location) o;
-        return x == point.x && y == point.y;
+        }
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(x, y);
+        if (hash == 0) hash = Objects.hash(x, y);
+        return hash;
     }
 }

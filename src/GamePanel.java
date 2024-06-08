@@ -34,7 +34,7 @@ public class GamePanel extends JPanel {
         gamePanel = this;
         boardManager.setBoard(new DynamicBoard());
         setPreferredSize(new Dimension(Constants.DESIRED_VIEWPORT_WIDTH, Constants.DESIRED_VIEWPORT_HEIGHT));
-        setBackground(Constants.ACCENT_COLOR);
+        setBackground(Constants.BACKGROUND_COLOR);
         setViewPortHome(Constants.DESIRED_VIEWPORT_WIDTH, Constants.DESIRED_VIEWPORT_HEIGHT);
 
         generation = 0;

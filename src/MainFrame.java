@@ -1,5 +1,8 @@
+import com.formdev.flatlaf.FlatLightLaf;
+
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
@@ -14,12 +17,19 @@ public class MainFrame extends JFrame {
 
 
     public static MainFrame frame;
+    public JPanel mainPanel;
 
     public MainFrame() {
         super();
+
+        UIManager.put("ToolTip.foreground", Constants.BACKGROUND_COLOR);
+        UIManager.put("ToolTip.background", Constants.PRIMARY_COLOR);
+        UIManager.put("ToolTip.border",BorderFactory.createMatteBorder(1,1,1,1,Constants.BACKGROUND_COLOR));
+
+
         setTitle("Conway's Game of Life");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        JPanel mainPanel = new JPanel();
+        mainPanel = new JPanel();
         mainPanel.setBorder(BorderFactory.createMatteBorder(10,10,10,10,Constants.ACCENT_COLOR)); //Add a border around the frame
         mainPanel.setBackground(Constants.ACCENT_COLOR); //Set the background color of the panel
         mainPanel.setLayout(new BorderLayout(10,10)); //Sets the edge offset of member panels to properly space them
@@ -27,47 +37,10 @@ public class MainFrame extends JFrame {
         ButtonPanel buttonPanel = new ButtonPanel(this);
         TopButtonPanel topButtonPanel = new TopButtonPanel(this);
         GamePanel gamePanel = new GamePanel();
+
         mainPanel.add(topButtonPanel,BorderLayout.NORTH);
         mainPanel.add(gamePanel);
         mainPanel.add(buttonPanel,BorderLayout.SOUTH);
-
-        addKeyListener(
-                new KeyListener() {
-                    @Override
-                    public void keyTyped(KeyEvent e) {
-
-                    }
-
-                    //Overrides the keyPressed method to add the state of the current pressed key to the map
-                    @Override
-                    public void keyPressed(KeyEvent e) {
-                        if(e.getKeyCode() == KeyEvent.VK_W || e.getKeyCode() == KeyEvent.VK_UP)
-                            GamePanel.viewPortOffsetY += Constants.PAN_SPEED_FACTOR / GamePanel.cellWidth;
-                        if(e.getKeyCode() == KeyEvent.VK_S || e.getKeyCode() == KeyEvent.VK_DOWN)
-                            GamePanel.viewPortOffsetY -= Constants.PAN_SPEED_FACTOR / GamePanel.cellWidth;
-                        if(e.getKeyCode() == KeyEvent.VK_A || e.getKeyCode() == KeyEvent.VK_LEFT)
-                            GamePanel.viewPortOffsetX += Constants.PAN_SPEED_FACTOR / GamePanel.cellWidth;
-                        if(e.getKeyCode() == KeyEvent.VK_D || e.getKeyCode() == KeyEvent.VK_RIGHT)
-                            GamePanel.viewPortOffsetX -= Constants.PAN_SPEED_FACTOR / GamePanel.cellWidth;
-
-                        if(e.getKeyCode() == KeyEvent.VK_R) PatternPlacer.rotatePattern();
-                        if(e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-                            if(GamePanel.patternImporter != null) GamePanel.patternImporter.dispose();
-                            GamePanel.patternPlacer = null;
-                        }
-
-                    }
-
-                    //Overrides the keyReleased method to add the state of the current released key to the map
-                    @Override
-                    public void keyReleased(KeyEvent e) {
-                    }
-
-
-                }
-        );
-
-
 
         add(mainPanel);
         pack();

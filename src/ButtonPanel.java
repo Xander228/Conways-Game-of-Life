@@ -1,7 +1,10 @@
 import javax.swing.*;
+import javax.swing.border.Border;
 import javax.swing.event.*;
+import javax.swing.text.NumberFormatter;
 import java.awt.*;
 import java.awt.event.*;
+import java.text.ParseException;
 
 public class ButtonPanel extends JPanel {
 
@@ -60,7 +63,8 @@ public class ButtonPanel extends JPanel {
             }
         });
 
-        JButton importString = new GameButton("Import");
+        JButton importString = new GameButton("Import / Export");
+        importString.setPreferredSize(new Dimension(140, 40));
         importString.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
                 if(GamePanel.patternImporter != null) GamePanel.patternImporter.dispose();
@@ -68,27 +72,31 @@ public class ButtonPanel extends JPanel {
             }
         });
 
-        JTextField speed = new JTextField("" + (int)(1000.0 / Constants.DEFAULT_GAME_DELAY),6);
+        JSpinner speed = new JSpinner(new SpinnerNumberModel((int)(1000.0 / Constants.DEFAULT_GAME_DELAY),
+                0,
+                1000,
+                5));
+
+        JFormattedTextField spinnerTextField = ((JSpinner.NumberEditor) speed.getEditor()).getTextField();
+        ((NumberFormatter) spinnerTextField.getFormatter()).setAllowsInvalid(false);
+        spinnerTextField.setHorizontalAlignment(JTextField.CENTER);
+
         speed.setPreferredSize(new Dimension(80, 40));
         speed.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Constants.ACCENT_COLOR));
         speed.setFont(new Font("Arial", Font.BOLD, 16));
-        speed.setForeground(Constants.BACKGROUND_COLOR);
-        speed.setHorizontalAlignment(SwingConstants.CENTER);
-        speed.getDocument().addDocumentListener(new DocumentListener() {
-            public void changedUpdate(DocumentEvent e) {
-                if(GamePanel.updateTimerSpeed(speed.getText())) speed.setFocusable(false);
-                speed.setFocusable(true);
-            }
-            public void removeUpdate(DocumentEvent e) {
-                if(GamePanel.updateTimerSpeed(speed.getText())) speed.setFocusable(false);
-                speed.setFocusable(true);
-            }
-            public void insertUpdate(DocumentEvent e) {
-                if(GamePanel.updateTimerSpeed(speed.getText())) speed.setFocusable(false);
-                speed.setFocusable(true);
+        speed.setToolTipText("Simulation Speed");
+        speed.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                GamePanel.updateTimerSpeed((int)speed.getValue());
             }
         });
 
+        frame.addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent e) {
+                frame.mainPanel.grabFocus();
+            }
+        });
 
         JPanel buttonSubPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20,5));
         buttonSubPanel.setBackground(Constants.BACKGROUND_COLOR);

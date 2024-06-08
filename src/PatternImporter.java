@@ -12,7 +12,7 @@ import java.util.Scanner;
 public class PatternImporter extends JDialog {
 
     PatternImporter() {
-        super((Frame) null, "Import String"); //Call the parent class's constructor
+        super((Frame) null, "Import / Export String"); //Call the parent class's constructor
         this.setSize(Constants.IMPORT_PANEL_WIDTH, Constants.IMPORT_PANEL_HEIGHT); //Sets the size of the dialog
         this.setLocationRelativeTo(MainFrame.frame);
         JPanel dialogPanel = new JPanel(); //Declare and initialize the dialogPanel that stores the message, buttons, and scores
@@ -65,10 +65,8 @@ public class PatternImporter extends JDialog {
 
         inputPanel.add(areaScrollPane);
 
-        JPanel buttonPanel = new JPanel(); //Declare and initialize the buttonPanel that stores the buttons
-        buttonPanel.setBorder(BorderFactory.createMatteBorder(5, 50, 5, 50, Constants.BACKGROUND_COLOR)); //Add a border around the frame
-        buttonPanel.setLayout(new BorderLayout(0, 0)); //Sets the edge offset of member panels to properly space them
-        buttonPanel.setBackground(Constants.BACKGROUND_COLOR); //Sets the background color of the textPanel
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 40,5));
+        buttonPanel.setBackground(Constants.BACKGROUND_COLOR);
 
         //Create a subclass of JButton made to display the action buttons
         class GameButton extends JButton {
@@ -83,13 +81,12 @@ public class PatternImporter extends JDialog {
             }
         }
 
-        String userhome = System.getProperty("user.home");
-        JFileChooser fileChooser = new JFileChooser(userhome +"\\Downloads");
+        JFileChooser fileChooser = new JFileChooser(Paths.get(".").toAbsolutePath().normalize().toString() + "\\Catalog");
         fileChooser.setDialogTitle("Choose a pattern file");
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Pattern Files", "rle", "txt"));
 
-        JButton importFile = new GameButton("Select File"); //Creates a new button to reset the game
+        JButton importFile = new GameButton("Import File"); //Creates a new button to reset the game
         //Add an actionListener object that runs actionPerformed when it senses the button press and restarts the game
         importFile.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -99,6 +96,23 @@ public class PatternImporter extends JDialog {
                     textArea.setText(Files.readString(Paths.get(fileChooser.getSelectedFile().toURI())));
                 } catch (Exception ae){
 
+                }
+            }
+        });
+
+        JButton exportFile = new GameButton("Export File"); //Creates a new button to reset the game
+        //Add an actionListener object that runs actionPerformed when it senses the button press and restarts the game
+        exportFile.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if(textArea.getText().equals("")) return;
+                fileChooser.setSelectedFile(new File(parseName(textArea.getText())));
+                if (fileChooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
+                    File file = fileChooser.getSelectedFile();
+                    try {
+                        Files.writeString(Paths.get(file.toURI()), textArea.getText());
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
                 }
             }
         });
@@ -119,14 +133,26 @@ public class PatternImporter extends JDialog {
         });
 
 
-        buttonPanel.add(importFile, BorderLayout.WEST); //Adds the restart button object to the left of the buttonPanel
-        buttonPanel.add(importString, BorderLayout.EAST); //Adds the exit button object to the right of the buttonPanel
+        buttonPanel.add(importFile, BorderLayout.WEST);
+        buttonPanel.add(exportFile, BorderLayout.CENTER);
+        buttonPanel.add(importString, BorderLayout.EAST);
 
         dialogPanel.add(textPanel, BorderLayout.NORTH); //Adds the textPanel object to the top of the dialogPanel
         dialogPanel.add(inputPanel, BorderLayout.CENTER); //Adds the inputPanel object to the center of the dialogPanel
         dialogPanel.add(buttonPanel, BorderLayout.SOUTH); //Adds the buttonPanel object to the bottom of the dialogPanel
         this.add(dialogPanel); //Adds the dialogPanel to the dialog
         this.setVisible(true); //Sets the dialog to visible
+    }
+
+    public String parseName(String str){
+        Scanner scanner = new Scanner(str);
+        scanner.useDelimiter("\n");
+
+        while (scanner.hasNext()) {
+            String line = scanner.nextLine();
+            if (line.substring(0,3).equals("#N ")) return line.substring(3) + ".rle";
+        }
+        return "pattern.rle";
     }
 
     public boolean[][] convertToArray(String string) throws FileNotFoundException {

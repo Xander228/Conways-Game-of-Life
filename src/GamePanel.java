@@ -1,4 +1,5 @@
 import javax.swing.*;
+import javax.swing.text.DefaultEditorKit;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.Rectangle2D;
@@ -30,6 +31,69 @@ public class GamePanel extends JPanel {
 
     GamePanel() {
         super();
+
+        InputMap inputMap= this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_DOWN_MASK),"copy");
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.CTRL_DOWN_MASK),"paste");
+
+        inputMap.put(KeyStroke.getKeyStroke("UP"),"up");
+        inputMap.put(KeyStroke.getKeyStroke('w'),"up");
+
+        inputMap.put(KeyStroke.getKeyStroke("DOWN"),"down");
+        inputMap.put(KeyStroke.getKeyStroke('s'),"down");
+
+        inputMap.put(KeyStroke.getKeyStroke("LEFT"),"left");
+        inputMap.put(KeyStroke.getKeyStroke('a'),"left");
+
+        inputMap.put(KeyStroke.getKeyStroke("RIGHT"),"right");
+        inputMap.put(KeyStroke.getKeyStroke('d'),"right");
+
+        inputMap.put(KeyStroke.getKeyStroke('r'),"rotate");
+        inputMap.put(KeyStroke.getKeyStroke("ESCAPE"),"escape");
+
+        ActionMap actionMap = this.getActionMap();
+        actionMap.put("copy", new AbstractAction(){
+            public void actionPerformed(ActionEvent e) {
+
+            }
+        });
+        actionMap.put("paste", new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+
+            }
+        });
+        actionMap.put("up", new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                viewPortOffsetY += Constants.PAN_SPEED_FACTOR / cellWidth;
+            }
+        });
+        actionMap.put("down", new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                viewPortOffsetY -= Constants.PAN_SPEED_FACTOR / cellWidth;
+            }
+        });
+        actionMap.put("left", new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                viewPortOffsetX += Constants.PAN_SPEED_FACTOR / cellWidth;
+            }
+        });
+        actionMap.put("right", new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                viewPortOffsetX -= Constants.PAN_SPEED_FACTOR / cellWidth;
+            }
+        });
+        actionMap.put("rotate", new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                patternPlacer.rotatePattern();
+            }
+        });
+        actionMap.put("escape", new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                    if(patternImporter != null) patternImporter.dispose();
+                    patternPlacer = null;
+            }
+        });
+
         boardManager = new BoardManager();
         gamePanel = this;
         boardManager.setBoard(new DynamicBoard());
@@ -41,11 +105,10 @@ public class GamePanel extends JPanel {
         gameHistory = new GameHistory();
         gameHistory.addToHistory(new GameState(generation, boardManager.getBoard()));
 
-        this.addMouseListener(new MouseListener() {
-            @Override
-            public void mouseClicked(MouseEvent e) {}
+        this.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
+                MainFrame.frame.mainPanel.grabFocus();
                 if(e.getButton() == MouseEvent.BUTTON1) {
                     if (patternPlacer != null) {
                         patternPlacer.writeToBoard();
@@ -73,10 +136,6 @@ public class GamePanel extends JPanel {
                     liveViewPortOffsetY = 0;
                 }
             }
-            @Override
-            public void mouseEntered(MouseEvent e) {}
-            @Override
-            public void mouseExited(MouseEvent e) {}
         });
 
         this.addMouseWheelListener(new MouseWheelListener() {
@@ -157,12 +216,10 @@ public class GamePanel extends JPanel {
     }
 
 
-    public static boolean updateTimerSpeed(String freq){
-        boolean inputNotOk;
-        try{inputNotOk = Integer.parseInt(freq) <= 0;}
-        catch (Exception e) {inputNotOk = true;}
+    public static boolean updateTimerSpeed(int freq){
+        boolean inputNotOk = freq <= 0;
         if (inputNotOk) boardManager.setTimerDelay(Constants.DEFAULT_GAME_DELAY);
-        else boardManager.setTimerDelay(1000.0 / Integer.parseInt(freq));
+        else boardManager.setTimerDelay(1000.0 / freq);
         return inputNotOk;
     }
 

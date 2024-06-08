@@ -2,7 +2,7 @@ import java.awt.*;
 import java.awt.geom.Rectangle2D;
 
 public class PatternPlacer {
-    private static boolean[][] pattern;
+    private boolean[][] pattern;
     int x,y;
 
     PatternPlacer(boolean[][] pattern) {
@@ -11,7 +11,8 @@ public class PatternPlacer {
         y = 0;
     }
 
-    public static void rotatePattern(){
+    public void rotatePattern(){
+        if(pattern == null) return;
         boolean[][] newPattern = new boolean[pattern[0].length][pattern.length];
         for (int indexY = 0; indexY < pattern[0].length; indexY++) {
             for (int indexX = 0; indexX < pattern.length; indexX++) {

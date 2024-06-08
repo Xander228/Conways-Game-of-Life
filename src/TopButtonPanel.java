@@ -43,6 +43,7 @@ public class TopButtonPanel extends JPanel {
         }
 
         JButton home = new GameButton("home.png");
+        home.setToolTipText("Home");
         home.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
                 GamePanel.gamePanel.setViewPortHome();
@@ -53,6 +54,7 @@ public class TopButtonPanel extends JPanel {
 
 
         JButton undo = new GameButton("undo.png");
+        undo.setToolTipText("Undo");
         undo.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
                 GamePanel.boardManager.stopTimer();
@@ -65,6 +67,7 @@ public class TopButtonPanel extends JPanel {
         });
 
         JButton redo = new GameButton("redo.png");
+        redo.setToolTipText("Redo");
         redo.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
                 GamePanel.boardManager.stopTimer();

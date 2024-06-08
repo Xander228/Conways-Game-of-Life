@@ -1,8 +1,14 @@
 import javax.swing.*;
 import javax.swing.text.DefaultEditorKit;
 import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.*;
 import java.awt.geom.Rectangle2D;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 
 public class GamePanel extends JPanel {
@@ -54,12 +60,24 @@ public class GamePanel extends JPanel {
         ActionMap actionMap = this.getActionMap();
         actionMap.put("copy", new AbstractAction(){
             public void actionPerformed(ActionEvent e) {
-
+                String myString = "This text will be copied into clipboard";
+                StringSelection stringSelection = new StringSelection(myString);
+                Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+                clipboard.setContents(stringSelection, null);
             }
         });
         actionMap.put("paste", new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
-
+                Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+                try {
+                    patternPlacer = new PatternPlacer(PatternImporter.convertToArray((String) clipboard.getData(DataFlavor.stringFlavor)));
+                } catch (FileNotFoundException ex) {
+                    throw new RuntimeException(ex);
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                } catch (UnsupportedFlavorException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         });
         actionMap.put("up", new AbstractAction() {

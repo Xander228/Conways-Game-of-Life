@@ -155,7 +155,7 @@ public class PatternImporter extends JDialog {
         return "pattern.rle";
     }
 
-    public boolean[][] convertToArray(String string) throws FileNotFoundException {
+    public static boolean[][] convertToArray(String string) throws FileNotFoundException {
         String patternCode = "";
 
         Scanner scanner = new Scanner(string);

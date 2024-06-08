@@ -139,8 +139,11 @@ public class BoardManager {
         gameTimer.setDelay(delay);
     }
 
-    public synchronized void invertCell(int x, int y){
+    public void invertCell(int x, int y){
+        boolean wasRunning = gameTimer.isRunning();
+        gameTimer.stop();
         board.setCell(x, y, !board.getCell(x,y));
+        if(wasRunning) gameTimer.start();
     }
 
     public void setBoard(DynamicBoard board){

@@ -4,17 +4,13 @@ import java.awt.geom.Rectangle2D;
 public class DisplayController {
 
 
-    public static void drawBoard(Graphics g){
-        if(GamePanel.cellWidth >= 1) renderFullRes(g);
-        else renderOptimizedRes(g, 1 / GamePanel.cellWidth);
+    public static void drawBoard(Graphics2D g2){
+        if(GamePanel.cellWidth >= 1) renderFullRes(g2);
+        else renderOptimizedRes(g2, 1 / GamePanel.cellWidth);
     }
 
-    public static void renderFullRes(Graphics g){
+    public static void renderFullRes(Graphics2D g2){
         double cellBoarderWidth = GamePanel.cellWidth * Constants.CELL_BORDER_RATIO;
-        Graphics2D g2 = (Graphics2D) g;
-        g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
 
         double totalViewPortOffsetY = GamePanel.viewPortOffsetY + GamePanel.liveViewPortOffsetY;
         double totalViewPortOffsetX = GamePanel.viewPortOffsetX + GamePanel.liveViewPortOffsetX;
@@ -27,10 +23,10 @@ public class DisplayController {
         for(int y = yMin; y < yMax; y++) {
             for(int x = xMin; x < xMax; x++) {
                 boolean cell = GamePanel.boardManager.getCell(x, y);
-                if(x == 0 && y == 0) g.setColor(cell ? Constants.HOME_LIVE_COLOR : Constants.HOME_COLOR);
-                else if(y == 0) g.setColor(cell ? Constants.X_LIVE_COLOR : Constants.X_COLOR);
-                else if(x == 0) g.setColor(cell ? Constants.Y_LIVE_COLOR : Constants.Y_COLOR);
-                else if(cell) g.setColor(Constants.LIVE_COLOR);
+                if(x == 0 && y == 0) g2.setColor(cell ? Constants.HOME_LIVE_COLOR : Constants.HOME_COLOR);
+                else if(y == 0) g2.setColor(cell ? Constants.X_LIVE_COLOR : Constants.X_COLOR);
+                else if(x == 0) g2.setColor(cell ? Constants.Y_LIVE_COLOR : Constants.Y_COLOR);
+                else if(cell) g2.setColor(Constants.LIVE_COLOR);
                 else continue;
 
                 ///*
@@ -43,7 +39,7 @@ public class DisplayController {
             }
         }
         if(cellBoarderWidth <= .2) return;
-        g.setColor(Constants.ACCENT_COLOR);
+        g2.setColor(Constants.ACCENT_COLOR);
         for(int y = yMin; y < yMax; y++) {
             Rectangle2D rect = new Rectangle2D.Double(
                     0,

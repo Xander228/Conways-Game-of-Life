@@ -43,7 +43,9 @@ public class Constants {
     public static final  Color Y_LIVE_COLOR = new Color((int)0xAAFFAA);
     public static final  Color HOME_LIVE_COLOR = new Color((int)0xAAAAFF);
 
-    public static final  Color OUTLINE_COLOR = new Color((int)0x3FFFFF);
+    public static final  Color COPY_OUTLINE_COLOR = new Color((int)0x3FFF3F);
+    public static final  Color CUT_OUTLINE_COLOR = new Color((int)0xFF3F3F);
+    public static final  Color PASTE_OUTLINE_COLOR = new Color((int)0x3FFFFF);
 }
 
 

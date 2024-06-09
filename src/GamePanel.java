@@ -1,12 +1,10 @@
 import javax.swing.*;
-import javax.swing.text.DefaultEditorKit;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.*;
-import java.awt.geom.Rectangle2D;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
@@ -17,6 +15,7 @@ public class GamePanel extends JPanel {
 
     public static GameHistory gameHistory;
     public static PatternPlacer patternPlacer;
+    public static PatternPicker patternPicker;
     public static JDialog patternImporter;
 
     public static GamePanel gamePanel;
@@ -40,6 +39,7 @@ public class GamePanel extends JPanel {
 
         InputMap inputMap= this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
         inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_DOWN_MASK),"copy");
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_X, InputEvent.CTRL_DOWN_MASK),"cut");
         inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.CTRL_DOWN_MASK),"paste");
 
         inputMap.put(KeyStroke.getKeyStroke("UP"),"up");
@@ -60,14 +60,27 @@ public class GamePanel extends JPanel {
         ActionMap actionMap = this.getActionMap();
         actionMap.put("copy", new AbstractAction(){
             public void actionPerformed(ActionEvent e) {
-                String myString = "This text will be copied into clipboard";
-                StringSelection stringSelection = new StringSelection(myString);
-                Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-                clipboard.setContents(stringSelection, null);
+                if(patternImporter != null) patternImporter.dispose();
+                patternPlacer = null;
+                patternPicker = null;
+
+                patternPicker = new PatternPicker(false);
+            }
+        });
+        actionMap.put("cut", new AbstractAction(){
+            public void actionPerformed(ActionEvent e) {
+                if(patternImporter != null) patternImporter.dispose();
+                patternPlacer = null;
+                patternPicker = null;
+
+                patternPicker = new PatternPicker(true);
             }
         });
         actionMap.put("paste", new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
+                if(patternImporter != null) patternImporter.dispose();
+                patternPlacer = null;
+                patternPicker = null;
                 Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
                 try {
                     patternPlacer = new PatternPlacer(PatternImporter.convertToArray((String) clipboard.getData(DataFlavor.stringFlavor)));
@@ -109,6 +122,7 @@ public class GamePanel extends JPanel {
             public void actionPerformed(ActionEvent e) {
                     if(patternImporter != null) patternImporter.dispose();
                     patternPlacer = null;
+                    patternPicker = null;
             }
         });
 
@@ -127,15 +141,19 @@ public class GamePanel extends JPanel {
             @Override
             public void mousePressed(MouseEvent e) {
                 MainFrame.frame.mainPanel.grabFocus();
+                double totalViewPortOffsetY = GamePanel.viewPortOffsetY + GamePanel.liveViewPortOffsetY;
+                double totalViewPortOffsetX = GamePanel.viewPortOffsetX + GamePanel.liveViewPortOffsetX;
                 if(e.getButton() == MouseEvent.BUTTON1) {
                     if (patternPlacer != null) {
                         patternPlacer.writeToBoard();
                         patternPlacer = null;
-                        return;
                     }
-                    invertCell(
-                            (int)Math.floor((e.getX() / cellWidth - viewPortOffsetX)) ,
-                            (int)Math.floor((e.getY() / cellWidth - viewPortOffsetY))
+                    else if(patternPicker != null) {
+                        patternPicker.mousePressed();
+                    }
+                    else invertCell(
+                            (int)Math.floor((e.getX() / cellWidth - totalViewPortOffsetX)) ,
+                            (int)Math.floor((e.getY() / cellWidth - totalViewPortOffsetY))
                     );
                 }
                 if(e.getButton() == MouseEvent.BUTTON2 || e.getButton() == MouseEvent.BUTTON3) {
@@ -146,6 +164,16 @@ public class GamePanel extends JPanel {
             }
             @Override
             public void mouseReleased(MouseEvent e) {
+                if(e.getButton() == MouseEvent.BUTTON1) {
+                    if(patternPicker != null) {
+                        String myString = patternPicker.mouseReleased();
+                        patternPicker = null;
+
+                        StringSelection stringSelection = new StringSelection(myString);
+                        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+                        clipboard.setContents(stringSelection, null);
+                    }
+                }
                 if(e.getButton() == MouseEvent.BUTTON2 || e.getButton() == MouseEvent.BUTTON3) {
                     isDragging = false;
                     viewPortOffsetX += liveViewPortOffsetX;
@@ -178,7 +206,7 @@ public class GamePanel extends JPanel {
                     liveViewPortOffsetY = (p.getY() - dragStartY) / cellWidth;
                 }
                 if (patternPlacer != null) patternPlacer.updateCoords(p);
-
+                if (patternPicker != null) patternPicker.updateCoords(p);
                 TopButtonPanel.updateLabels();
                 repaint();
 
@@ -244,8 +272,13 @@ public class GamePanel extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        DisplayController.drawBoard(g);
-        if (patternPlacer != null) patternPlacer.drawPattern(g);
+        Graphics2D g2 = (Graphics2D) g;
+        g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
+        DisplayController.drawBoard(g2);
+        if (patternPlacer != null) patternPlacer.draw(g2);
+        if (patternPicker != null) patternPicker.draw(g2);
     }
 }

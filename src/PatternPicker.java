@@ -26,13 +26,13 @@ public class PatternPicker {
     }
 
     private String readBoard(){
-        String pattern = "";
+        StringBuilder pattern = new StringBuilder();
         for (int indexY = 0; indexY < height; indexY++) {
             for (int indexX = 0; indexX < width; indexX++) {
-                pattern += GamePanel.boardManager.getCell(
+                pattern.append(GamePanel.boardManager.getCell(
                         (originX + indexX),
                         (originY + indexY)) ?
-                        "o" : "b";
+                        "o" : "b");
 
                 if(cut) GamePanel.boardManager.setCell(
                         (originX + indexX),
@@ -40,13 +40,27 @@ public class PatternPicker {
                         false
                 );
             }
-            pattern += (indexY != height - 1) ? "$" : "!";
+            pattern.append((indexY != height - 1) ? "$" : "!");
         }
 
-        return pattern;
+        int lastIdenticalIndex = 0;
+        StringBuilder optimizedPattern = new StringBuilder();
+        for (int i = 0; i < pattern.length(); i++) {
+            if (i < pattern.length() - 1){
+               if(pattern.charAt(lastIdenticalIndex) == pattern.charAt(i + 1)) continue;
+            }
+            int symbolRepeats = i - lastIdenticalIndex + 1;
+            lastIdenticalIndex = i + 1;
+            if (symbolRepeats == 1) optimizedPattern.append(String.valueOf(pattern.charAt(i)));
+            else optimizedPattern.append(symbolRepeats).append(String.valueOf(pattern.charAt(i)));
+        }
+
+
+        return optimizedPattern.toString();
     }
 
     public void updateCoords(Point p){
+        if (mouseReleased) return;
         if (!mousePressed) updateStartCoords(p);
         else updateEndCoords(p);
     }

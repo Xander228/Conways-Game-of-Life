@@ -84,11 +84,7 @@ public class GamePanel extends JPanel {
                 Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
                 try {
                     patternPlacer = new PatternPlacer(PatternImporter.convertToArray((String) clipboard.getData(DataFlavor.stringFlavor)));
-                } catch (FileNotFoundException ex) {
-                    throw new RuntimeException(ex);
-                } catch (IOException ex) {
-                    throw new RuntimeException(ex);
-                } catch (UnsupportedFlavorException ex) {
+                } catch (UnsupportedFlavorException | IOException ex) {
                     throw new RuntimeException(ex);
                 }
             }
@@ -262,11 +258,10 @@ public class GamePanel extends JPanel {
     }
 
 
-    public static boolean updateTimerSpeed(int freq){
+    public static void updateTimerSpeed(int freq){
         boolean inputNotOk = freq <= 0;
         if (inputNotOk) boardManager.setTimerDelay(Constants.DEFAULT_GAME_DELAY);
         else boardManager.setTimerDelay(1000.0 / freq);
-        return inputNotOk;
     }
 
     @Override

@@ -94,7 +94,7 @@ public class PatternImporter extends JDialog {
                 fileChooser.showOpenDialog(null);
                 try {
                     textArea.setText(Files.readString(Paths.get(fileChooser.getSelectedFile().toURI())));
-                } catch (Exception ae){
+                } catch (Exception ignored){
 
                 }
             }
@@ -104,7 +104,7 @@ public class PatternImporter extends JDialog {
         //Add an actionListener object that runs actionPerformed when it senses the button press and restarts the game
         exportFile.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if(textArea.getText().equals("")) return;
+                if(textArea.getText().isEmpty()) return;
                 fileChooser.setSelectedFile(new File(parseName(textArea.getText())));
                 if (fileChooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
                     File file = fileChooser.getSelectedFile();
@@ -150,13 +150,13 @@ public class PatternImporter extends JDialog {
 
         while (scanner.hasNext()) {
             String line = scanner.nextLine();
-            if (line.substring(0,3).equals("#N ")) return line.substring(3) + ".rle";
+            if (line.startsWith("#N ")) return line.substring(3) + ".rle";
         }
         return "pattern.rle";
     }
 
     public static boolean[][] convertToArray(String string) throws FileNotFoundException {
-        String patternCode = "";
+        StringBuilder patternCode = new StringBuilder();
 
         Scanner scanner = new Scanner(string);
         scanner.useDelimiter("\n");
@@ -165,7 +165,7 @@ public class PatternImporter extends JDialog {
             String line = scanner.nextLine();
             if (line.charAt(0) == '#') continue;
             if (line.charAt(0) == 'x') continue;
-            patternCode += line;
+            patternCode.append(line);
         }
 
         int xSize = 0;

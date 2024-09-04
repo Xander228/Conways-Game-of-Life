@@ -1,0 +1,12 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="Conways Game of Life:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/Conways_Game_of_Life_jar</output-path>
+    <root id="archive" name="Conways Game of Life.jar">
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/src/resources/META-INF/MANIFEST.MF" />
+      </element>
+      <element id="module-output" name="Conways Game of Life" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/flatlaf-3.4.1.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

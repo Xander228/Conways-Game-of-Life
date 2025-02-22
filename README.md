@@ -29,10 +29,6 @@ This project provides a graphical user interface (GUI) that allows users to inte
 
 Patterns can be imported/exported in **RLE (Run-Length Encoding)** format. A basic pattern might look like this:
 
-ruby
-
-CopyEdit
-
 `#N Glider
 #P 1 1
 x = 3, y = 3, rule = B3/S23

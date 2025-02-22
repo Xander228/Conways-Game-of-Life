@@ -4,7 +4,7 @@
 
 Conway's Game of Life is a cellular automaton where each cell can be either "alive" or "dead". The game progresses in discrete steps, with each cell's state being determined by the states of its neighboring cells.
 
-This project provides a graphical user interface (GUI) that allows users to interact with Conway's Game of Life, import/export patterns, and visualize the evolution of the grid.
+This project provides a GUI that allows users to interact with Conway's Game of Life, import/export patterns, and visualize the evolution of the grid.
 
 ## Features
 

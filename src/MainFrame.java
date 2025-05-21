@@ -21,7 +21,6 @@ public class MainFrame extends JFrame {
 
     public MainFrame() {
         super();
-
         UIManager.put("ToolTip.foreground", Constants.BACKGROUND_COLOR);
         UIManager.put("ToolTip.background", Constants.PRIMARY_COLOR);
         UIManager.put("ToolTip.border",BorderFactory.createMatteBorder(1,1,1,1,Constants.BACKGROUND_COLOR));

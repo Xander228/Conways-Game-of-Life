@@ -1,5 +1,6 @@
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
 
 public class DisplayController {
 
@@ -10,6 +11,9 @@ public class DisplayController {
     }
 
     public static void renderFullRes(Graphics2D g2){
+        int width = g2.getClipBounds().width;
+        BufferedImage bufferedImage = new BufferedImage(width, width, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2dBufferedImage = bufferedImage.createGraphics();
         double cellBoarderWidth = GamePanel.cellWidth * Constants.CELL_BORDER_RATIO;
 
         double totalViewPortOffsetY = GamePanel.viewPortOffsetY + GamePanel.liveViewPortOffsetY;
@@ -23,10 +27,10 @@ public class DisplayController {
         for(int y = yMin; y < yMax; y++) {
             for(int x = xMin; x < xMax; x++) {
                 boolean cell = GamePanel.boardManager.getCell(x, y);
-                if(x == 0 && y == 0) g2.setColor(cell ? Constants.HOME_LIVE_COLOR : Constants.HOME_COLOR);
-                else if(y == 0) g2.setColor(cell ? Constants.X_LIVE_COLOR : Constants.X_COLOR);
-                else if(x == 0) g2.setColor(cell ? Constants.Y_LIVE_COLOR : Constants.Y_COLOR);
-                else if(cell) g2.setColor(Constants.LIVE_COLOR);
+                if(x == 0 && y == 0) g2dBufferedImage.setColor(cell ? Constants.HOME_LIVE_COLOR : Constants.HOME_COLOR);
+                else if(y == 0) g2dBufferedImage.setColor(cell ? Constants.X_LIVE_COLOR : Constants.X_COLOR);
+                else if(x == 0) g2dBufferedImage.setColor(cell ? Constants.Y_LIVE_COLOR : Constants.Y_COLOR);
+                else if(cell) g2dBufferedImage.setColor(Constants.LIVE_COLOR);
                 else continue;
 
                 ///*
@@ -35,18 +39,18 @@ public class DisplayController {
                         (cellBoarderWidth / 2) + (y + totalViewPortOffsetY) * GamePanel.cellWidth,
                         GamePanel.cellWidth - cellBoarderWidth,
                         GamePanel.cellWidth - cellBoarderWidth);
-                g2.fill(rect);
+                g2dBufferedImage.fill(rect);
             }
         }
         if(cellBoarderWidth <= .2) return;
-        g2.setColor(Constants.ACCENT_COLOR);
+        g2dBufferedImage.setColor(Constants.ACCENT_COLOR);
         for(int y = yMin; y < yMax; y++) {
             Rectangle2D rect = new Rectangle2D.Double(
                     0,
                     (-cellBoarderWidth / 2) + (y + totalViewPortOffsetY) * GamePanel.cellWidth,
                     GamePanel.gamePanel.getWidth(),
                     cellBoarderWidth);
-            g2.fill(rect);
+            g2dBufferedImage.fill(rect);
         }
         for(int x = xMin; x < xMax; x++) {
             Rectangle2D rect = new Rectangle2D.Double(
@@ -54,7 +58,7 @@ public class DisplayController {
                     0,
                     cellBoarderWidth,
                     GamePanel.gamePanel.getHeight());
-            g2.fill(rect);
+            g2dBufferedImage.fill(rect);
         }
     }
 
